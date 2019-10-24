@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node build/index.js",
     "server": "nodemon --exec babel-node server/index.js",
+    "server:prodDB": "MONGO_URL=mongodb+srv://yers:W0KJcP4J-@cluster0-re8hh.mongodb.net/education?retryWrites=true&w=majority nodemon --exec babel-node server/index.js",
     "clean": "rm -rf node_modules",
     "clean:admin": "npm run clean --prefix admin",
     "clean:all": "concurrently \"npm run clean\" \"npm run clean:admin\"",
