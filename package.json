@@ -12,10 +12,11 @@
     "install:admin": "npm install --prefix admin",
     "admin": "npm run start --prefix admin",
     "build:admin": "npm run build --prefix admin",
+    "build:server": "babel server --out-dir build",
     "build": "concurrently \"npm run build:server\" \"npm run build:admin\"",
     "dev": "concurrently \"npm run server\" \"npm run admin\"",
     "postinstall": "npm run install:admin",
-    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client",
+    "heroku-postbuild": "npm run build",
     "test": "cross-env NODE_ENV=test node_modules/.bin/ava server/**/*.test.js --verbose"
   },
   "keywords": [],
