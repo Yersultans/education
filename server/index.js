@@ -22,7 +22,7 @@ mongoose.connect(mongoUrl, { useNewUrlParser: true });
 
 app.use(cors(corsOptions));
 app.use(bodyParser.json({ limit: "50mb" }));
-app.use(expressValidator());
+//app.use(expressValidator());
 app.use(
   session({
     secret: "sdfkjasklfdhakjlsfhksad",
