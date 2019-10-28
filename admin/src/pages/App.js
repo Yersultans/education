@@ -16,6 +16,7 @@ import Subjects from "./subjects/Subjects";
 import Subject from "./subjects/Subject";
 import Lessons from "./lessons/Lessons";
 import Lesson from "./lessons/Lesson";
+import Questions from "./questions/Questions"
 
 import withHelmet from "../hocs/withHelmet";
 
@@ -49,6 +50,7 @@ class App extends Component {
             <Route exact path="/subjects/:id" component={Subject} />
             <Route exact path="/lessons" component={Lessons} />
             <Route exact path="/lessons/:id" component={Lesson} />
+            <Route exect path="/questions" component={Questions}/>
           </Layout>
         </BrowserRouter>
       </div>

@@ -9,7 +9,8 @@ import { logout as logoutAction } from "../actions/auth";
 const menuItems = [
   { link: "/users", name: "Users", icon: "user" },
   { link: "/subjects", name: "Subjects", icon: "book" },
-  { link: "/lessons", name: "Lessons", icon: "bank" }
+  { link: "/lessons", name: "Lessons", icon: "bank" },
+  { link: "/questions", name: "Questions", icon: ""}
 ];
 
 class Header extends Component {

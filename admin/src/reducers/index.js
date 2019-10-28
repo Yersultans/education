@@ -5,7 +5,7 @@ import usersReducer from "./usersReducer";
 import subjectReducer from "./subjectReducer";
 import subjectsReducer from "./subjectsReducer";
 import messagesReducer from "./messagesReducer";
-import lessonReducer from "./lessonsReducer";
+import lessonReducer from "./lessonReducer";
 import lessonsReducer from "./lessonsReducer";
 
 export default combineReducers({
