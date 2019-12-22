@@ -5,7 +5,11 @@ const { Schema } = mongoose;
 
 const Subject = new Schema({
   name: String, 
-  imgUrl: String
+  imageUrl: String,
+  history: String, 
+  Wikipedia: String,
+  instructions: String,
+  ingredients: [String],
 }, {timestamps: {createdAt: 'created_at', updateAt: 'update_at'}});
 
 Subject.plugin(mongoosePaginate);
