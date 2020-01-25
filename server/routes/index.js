@@ -1,5 +1,4 @@
 const lessonRoutes = require("./lesson");
-const optionRoutes = require("./option");
 const questionRoutes = require("./question");
 const subjectRoutes = require("./subject");
 const userRoutes = require("./user");
@@ -9,7 +8,6 @@ const authRoutes = require("./auth")
  
 module.exports = app => {
   app.use("/api", lessonRoutes);
-  app.use("/api", optionRoutes);
   app.use("/api", questionRoutes);
   app.use("/api", subjectRoutes);
   app.use("/api", userRoutes);
