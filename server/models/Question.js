@@ -3,11 +3,15 @@ const mongoosePaginate = require("mongoose-paginate");
 
 const { Schema } = mongoose;
 
-const Question = new Schema({
-  question: String,
-  options: [{ type: Schema.Types.ObjectId, ref: "Option"}],
-
-},{timestamps: {createdAt: 'created_at', updateAt: 'update_at'}});
+const Question = new Schema(
+  {
+    question: String,
+    options: [String],
+    currectAnswers: [String],
+    isMultipleAnswers: Boolean
+  },
+  { timestamps: { createdAt: "created_at", updateAt: "update_at" } }
+);
 
 Question.plugin(mongoosePaginate);
 

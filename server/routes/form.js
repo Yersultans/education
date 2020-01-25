@@ -2,7 +2,13 @@ const express = require("express");
 
 const router = express.Router();
 
-const { getForms, getForm, addForm, updateForm, deleteForm } = require("../controllers/form");
+const {
+  getForms,
+  getForm,
+  addForm,
+  updateForm,
+  deleteForm
+} = require("../controllers/form");
 
 router.get("/forms", getForms);
 router.get("/forms/:formId", getForm);

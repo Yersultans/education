@@ -30,12 +30,12 @@ module.exports.registrateUser = async (req, res) => {
       return user;
     }
   );
-} 
+};
 
 module.exports.logout = async (req, res) => {
   req.logout();
   return redirect({ request: req, response: res, path: "/" });
-}
+};
 
 module.exports.login = async (req, res) => {
   const { user } = req;
@@ -44,7 +44,7 @@ module.exports.login = async (req, res) => {
     config.SECRET_KEY
   );
   return res.json({ user, token });
-}
+};
 
 module.exports.loginAdmin = async (req, res) => {
   try {
@@ -63,7 +63,7 @@ module.exports.loginAdmin = async (req, res) => {
     console.log("err: ", err);
     return res.status(422).send(err);
   }
-}
+};
 
 module.exports.currentUser = async (req, res) => {
   if (!req.user) return res.status(401).send(null);
