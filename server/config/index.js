@@ -3,17 +3,10 @@ const judge0 = require('./judge0')
 const badgeUp = require('./badgeUp')
 const socket = require('./socket')
 
-const password = '52turdayk1ds3'
-const username = 'saturdaykids'
-
 const mongoDB = {
   defaultEndpoint: `mongodb+srv://yers:W0KJcP4J-@cluster0-re8hh.mongodb.net/education?retryWrites=true&w=majority`,
   prodEndpoint: `mongodb+srv://yers:W0KJcP4J-@cluster0-re8hh.mongodb.net/education?retryWrites=true&w=majority`
 }
-
-// const mongoDB = {
-//   defaultEndpoint: `mongodb://${username}:${password}@ds241647.mlab.com:41647/saturday-kids-features`
-// };
 
 const SECRET_KEY =
   'dkasmdmaskfndjkgnfjdnlsdmejwnrfefjkervfnjkfmklsamdejwkoivnfkkndgsdfo'
