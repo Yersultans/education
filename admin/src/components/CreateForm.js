@@ -1,15 +1,15 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { DatePicker, Modal, Form, Input, Select, Checkbox } from "antd";
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
+import { DatePicker, Modal, Form, Input, Select, Checkbox } from 'antd'
 
-const FormItem = Form.Item;
+const FormItem = Form.Item
 
 class CreateForm extends Component {
-  state = {};
+  state = {}
 
   render() {
-    const { visible, onCancel, onCreate, form, fields, title } = this.props;
-    const { getFieldDecorator } = form;
+    const { visible, onCancel, onCreate, form, fields, title } = this.props
+    const { getFieldDecorator } = form
     return (
       <Modal
         visible={visible}
@@ -33,7 +33,7 @@ class CreateForm extends Component {
                   /* eslint-disable */
                   field.options ? (
                     <Select
-                      mode={field.mode || "single"}
+                      mode={field.mode || 'single'}
                       placeholder="Choose type"
                     >
                       {field.options.map(option => (
@@ -46,10 +46,10 @@ class CreateForm extends Component {
                     <Checkbox />
                   ) : field.number ? (
                     <Input type="number" />
-                  ) : field.inputType === "date" ? (
+                  ) : field.inputType === 'date' ? (
                     <DatePicker />
                   ) : (
-                    <Input />
+                    <Input placeholder={field.label}/>
                   )
                   /* eslint-enable */
                 )}
@@ -59,13 +59,12 @@ class CreateForm extends Component {
           {this.props.dataToDisplay &&
             Object.keys(this.props.dataToDisplay).map(key => (
               <div>
-                <p>{`${key}:`}</p>
-                <p>{this.props.dataToDisplay[key]}</p>
+                <p>{`${key}: ${this.props.dataToDisplay[key]}`}</p>
               </div>
             ))}
         </>
       </Modal>
-    );
+    )
   }
 }
 
@@ -76,11 +75,13 @@ CreateForm.propTypes = {
   onCancel: PropTypes.func.isRequired,
   onCreate: PropTypes.func.isRequired,
   fields: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  form: PropTypes.shape({}).isRequired
-};
+  form: PropTypes.shape({
+    getFieldDecorator: PropTypes.func
+  }).isRequired
+}
 
 CreateForm.defaultProps = {
   dataToDisplay: {}
-};
+}
 
-export default Form.create()(CreateForm);
+export default Form.create()(CreateForm)

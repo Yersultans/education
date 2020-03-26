@@ -1,0 +1,26 @@
+type Form {
+  id: ID!
+  name: String
+  description: String
+  messages: [FormMessage]
+  createdAt: String
+  updateAt: String
+}
+
+input FormInput {
+  id: ID!
+  name: String
+  description: String
+  messages: [ID]
+}
+
+extend type Query {
+  forms: [Form]!
+  form(id: ID!): Form!
+}
+
+extend type Mutation {
+  addForm(input: FormInput): Form!
+  updateForm(id: ID!, input: FormInput): Form!
+  deleteForm(id: ID!): ID!
+}

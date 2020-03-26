@@ -1,14 +1,24 @@
-import { FETCH_LESSONS, ADD_LESSON, REMOVE_LESSON } from "../actions/types";
+import {
+  FETCH_LESSONS,
+  FETCH_LESSON,
+  ADD_LESSON,
+  REMOVE_LESSON,
+  UPDATE_LESSON
+} from '../actions/types'
 
-export default (state = [], action) => {
+export default function(state = [], action) {
   switch (action.type) {
     case FETCH_LESSONS:
-      return action.payload;
+      return action.payload
+    case FETCH_LESSON:
+      return [...state, action.payload]
+    case UPDATE_LESSON:
+      return [...state]
     case ADD_LESSON:
-      return [...state, action.payload];
+      return [...state, action.payload]
     case REMOVE_LESSON:
-      return state.filter(item => item._id !== action.payload);
+      return state.filter(item => item._id !== action.payload)
     default:
-      return state;
+      return state
   }
 }

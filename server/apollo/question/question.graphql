@@ -1,0 +1,28 @@
+type Question {
+  id: ID!
+  type: String
+  level: Int
+  text: String
+  options: [String]
+  correctAnswers: [String]
+  isMultipleAnswers: Boolean
+}
+
+input QuestionInput {
+  text: String
+  level: Int
+  type: String
+  options: [String]
+  correctAnswers: [String]
+  isMultipleAnswers: Boolean
+}
+
+extend type Query {
+  questions: [Question]!
+  question(id: ID!): Question!
+}
+extend type Mutation {
+  addQuestion(input: QuestionInput): Question!
+  updateQuestion(id: ID!, input: QuestionInput): Question!
+  deleteQuestion(id: ID!): ID!
+}

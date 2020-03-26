@@ -1,123 +1,131 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { Button, Input, Select } from "antd";
-import { connect } from "react-redux";
-import { fetchLesson, updateLesson } from "../../actions/lessons";
-import { fetchSubjects } from "../../actions/subjects";
+import React from 'react'
+import styled from 'styled-components'
+import { useQuery, useMutation, gql } from '@apollo/client'
+import EditComponent from '../../components/EditComponent'
 
-class Lesson extends Component {
-  state = this.stateFromProps(this.props);
+import DefaultStyledContainer from '../../components/DefaultStyledContainer'
 
-  componentDidMount() {
-    this.props.fetchLesson(this.props.match.params.id);
-    this.props.fetchSubjects();
-  }
-
-  componentWillReceiveProps(nextProps) {
-    this.setState(this.stateFromProps(nextProps));
-  }
-
-  stateFromProps(props) {
-    const lesson = props.lesson[this.props.match.params.id];
-
-    if(lesson && lesson.subject){
-      return {
-        name: lesson.name || "",
-        subject: lesson.subject || ""
-      };
+const GET_LESSON = gql`
+  query getLesson($id: ID!) {
+    lesson(id: $id) {
+      id
+      name
+      content
+      imageUrl
+      language
+      subject {
+        id
+        name
+      }
     }
-    if (lesson) {
-      return {
-        name: lesson.name || "",
-      };
+  }
+`
+const GET_DATA = gql`
+  query getData($id: ID!) {
+    lesson(id: $id) {
+      id
+      name
+      content
+      imageUrl
+      language
+      subject {
+        id
+        name
+      }
     }
-    return { name: "" };
-  }
-
-  handleInputChange = (key, value) => {
-    this.setState({ [key]: value });
-  };
-
-  handleUpdateClick = () => {
-    const { name, subject } = this.state;
-    this.props.updateLesson(
-      this.props.match.params.id, { name, subject }
-    );
-  };
-
-  handleSubjectChange = (subject) => {
-    this.setState({ subject })
-  }
-
-  render() {
-    const { subjects } = this.props;
-    const { name, subject: currentSubject } = this.state;
-    const lesson = this.props.lesson[this.props.match.params.id];
-    if (!lesson) {
-      return <div style={{ height: "calc(100vh - 86px)", width: '90%', margin: 'auto', marginTop: 20, backgroundColor: 'transparent', marginBottom: 20 }}>Lesson not found</div>;
+    subjects {
+      id
+      name
     }
-
-    return (
-      <div style={{ height: "calc(100vh - 86px)", width: '90%', margin: 'auto', marginTop: 20, backgroundColor: 'transparent', marginBottom: 20 }}>
-        <div style={{ textAlign: 'left' }}>
-          Name of Lesson:
-          <Input
-            placeholder="Name"
-            type="text"
-            value={name}
-            onChange={e => this.handleInputChange("name", e.target.value)}
-            style={{ marginBottom: 8 }}
-          />
-          <div>Subject of Subject:
-            <Select
-              mode="single"
-              placeholder="Please select subject"
-              defaultValue={currentSubject ? currentSubject.name : null}
-              onChange={this.handleSubjectChange}
-              style={{ width: "100%", marginBottom: 8 }}
-            >
-              {subjects.map(subject => (
-                <Select.Option value={subject._id} key={subject._id}>
-                  {subject.name}
-                </Select.Option>
-          ))}
-            </Select>
-          </div>
-        </div>
-
-        <Button
-          type="primary"
-          onClick={this.handleUpdateClick}
-          style={{ marginRight: 8 }}
-        >
-          Update
-        </Button>
-      </div>
-    );
   }
+`
+
+const UPDATE_LESSON = gql`
+  mutation deleteLesson($id: ID!, $input: LessonInput) {
+    updateLesson(id: $id, input: $input) {
+      id
+      name
+      content
+      imageUrl
+      language
+      subject {
+        id
+        name
+      }
+    }
+  }
+`
+export default function Lesson(props) {
+  const { id } = props.match.params
+
+  const [updateLesson] = useMutation(UPDATE_LESSON)
+
+  const { data, loading, error } = useQuery(GET_DATA, { variables: { id } })
+
+  if (loading) return <div>loading</div>
+  if (error) return <div>ERROR</div>
+
+  const fields = [
+    {
+      key: 'name',
+      label: 'Lesson Name',
+      value: data && data.lesson ? data.lesson.name : '',
+      isRequired: true
+    },
+    {
+      key: 'content',
+      label: 'Lesson Content',
+      value: data && data.lesson ? data.lesson.content : '',
+      type: 'text'
+    },
+    {
+      key: 'imageUrl',
+      label: 'Lesson ImageUrl',
+      value: data && data.lesson ? data.lesson.imageUrl : '',
+      isRequired: true
+    },
+    {
+      key: 'language',
+      label: 'Lesson Language',
+      value: data && data.lesson ? data.lesson.language : '',
+      type: 'select',
+      options: [
+        {
+          value: 'kazakh',
+          label: 'kazakh'
+        },
+        {
+          value: 'russian',
+          label: 'russian'
+        }
+      ]
+    },
+    {
+      key: 'subject',
+      label: 'subject',
+      type: 'select',
+      value:
+        data && data.lesson && data.lesson.subject
+          ? data.lesson.subject.id
+          : '',
+      options:
+        data && data.subjects
+          ? data.subjects.map(subject => ({
+              label: subject.name,
+              value: subject.id
+            }))
+          : [],
+      isMultipleSelection: false
+    }
+  ]
+
+  const handleUpdateClick = values => {
+    updateLesson({ variables: { id, input: values } })
+  }
+
+  return (
+    <DefaultStyledContainer>
+      <EditComponent fields={fields} onUpdateClick={handleUpdateClick} />
+    </DefaultStyledContainer>
+  )
 }
-
-Lesson.propTypes = {
-  subjects: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  fetchSubjects: PropTypes.func.isRequired,
-  lesson: PropTypes.shape({
-    name: PropTypes.string
-  }).isRequired,
-  fetchLesson: PropTypes.func.isRequired,
-  match: PropTypes.shape({
-    params: PropTypes.shape({
-      id: PropTypes.string.isRequired
-    }).isRequired
-  }).isRequired,
-  updateLesson: PropTypes.func.isRequired,
-};
-
-function mapStateToProps(state) {
-  const { lesson, subjects } = state;
-  return { lesson, subjects };
-}
-
-export default connect(
-  mapStateToProps,
-  { fetchLesson, updateLesson, fetchSubjects }
-)(Lesson);

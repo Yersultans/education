@@ -1,9 +1,9 @@
-import { pushError } from "./messages";
+import { pushError } from './messages'
 
 export default (err, dispatch) => {
   if (err.response) {
-    pushError(dispatch, err.response.data.message);
-    return;
+    pushError(dispatch, err.response.data.message)
+    return
   }
-  pushError(dispatch, "Unspecified error");
-};
+  pushError(dispatch, 'Unspecified error')
+}

@@ -1,8 +1,8 @@
-const express = require("express");
+const express = require('express')
 
-const router = express.Router();
+const router = express.Router()
 
-const passport = require("passport");
+const passport = require('passport')
 
 const {
   registrateUser,
@@ -10,27 +10,24 @@ const {
   loginAdmin,
   logout,
   currentUser
-} = require("../controllers/auth");
+} = require('../controllers/auth')
 
-const groupHelpers = require("../helpers/group");
-
-router.post("/auth/register", registrateUser);
-router.get("/auth/logout", logout);
+router.post('/auth/register', registrateUser)
+router.get('/auth/logout', logout)
 router.post(
-  "/auth/login",
-  groupHelpers.requireOnOfRole(["admin"]),
-  passport.authenticate("local", { session: false }),
+  '/auth/login',
+  passport.authenticate('local', { session: false }),
   login
-);
+)
 router.post(
-  "/auth/loginAdmin",
-  passport.authenticate("local", { session: false }),
+  '/auth/loginAdmin',
+  passport.authenticate('local', { session: false }),
   loginAdmin
-);
+)
 router.get(
-  "/auth/current_user",
-  passport.authenticate("jwt", { session: false }),
+  '/auth/current_user',
+  passport.authenticate('jwt', { session: false }),
   currentUser
-);
+)
 
-module.exports = router;
+module.exports = router

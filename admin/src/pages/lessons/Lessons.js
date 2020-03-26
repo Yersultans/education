@@ -1,52 +1,129 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { Button, Divider, Table } from "antd";
-import { connect } from "react-redux";
-import { Link } from "react-router-dom";
-import showConfirm from '../../components/DeleteFromTableFunc';
-import DefaultStyledContainer from '../../components/DefaultStyledContainer';
-import CreateForm from "../../components/CreateForm";
-import {
-  fetchLessons,
-  createLesson,
-  deleteLesson
-} from "../../actions/lessons";
-import { fetchSubjects } from "../../actions/subjects";
+import React, { useState, useCallback } from 'react'
+import { useQuery, useMutation, gql } from '@apollo/client'
+import { Link } from 'react-router-dom'
+import { Table, Button, Divider } from 'antd'
 
-class Lessons extends Component {
-  state = {
-    modalVisible: false
-  };
+import CreateForm from '../../components/CreateForm'
+import DefaultStyledContainer from '../../components/DefaultStyledContainer'
+import showConfirm from '../../components/DeleteFromTableFunc'
 
-  componentDidMount() {
-    this.props.fetchLessons();
-    this.props.fetchSubjects();
+const GET_LESSONS = gql`
+  query getLessons {
+    lessons {
+      id
+      name
+      content
+      imageUrl
+      language
+      subject {
+        id
+        name
+      }
+    }
   }
+`
 
-  columns = [
+const GET_DATA = gql`
+  query getData {
+    lessons {
+      id
+      name
+      content
+      imageUrl
+      language
+      subject {
+        id
+        name
+      }
+    }
+    subjects {
+      id
+      name
+    }
+  }
+`
+
+const DELETE_LESSON = gql`
+  mutation deleteLesson($id: ID!) {
+    deleteLesson(id: $id)
+  }
+`
+const ADD_LESSON = gql`
+  mutation addLesson($input: LessonInput) {
+    addLesson(input: $input) {
+      id
+      name
+      content
+      imageUrl
+      language
+      subject {
+        id
+        name
+      }
+    }
+  }
+`
+export default function Lessons() {
+  const [modalVisible, setModalVisible] = useState(false)
+  const [formRef, setFormRef] = useState(null)
+
+  const [addLesson] = useMutation(ADD_LESSON, {
+    update(cache, { data: { addLesson: lesson } }) {
+      const { lessons } = cache.readQuery({ query: GET_LESSONS })
+      cache.writeQuery({
+        query: GET_LESSONS,
+        data: { lessons: lessons.concat([lesson]) }
+      })
+    }
+  })
+
+  const [deleteLesson] = useMutation(DELETE_LESSON, {
+    update(cache, { data: { deleteLesson: id } }) {
+      const { lessons } = cache.readQuery({ query: GET_LESSONS })
+      cache.writeQuery({
+        query: GET_LESSONS,
+        data: {
+          lessons: lessons.filter(lesson => lesson.id !== id)
+        }
+      })
+    }
+  })
+
+  const saveFormRef = useCallback(node => {
+    if (node !== null) {
+      setFormRef(node)
+    }
+  }, [])
+
+  const { data, loading, error } = useQuery(GET_DATA)
+
+  const columns = [
     {
-      title: "Name",
-      dataIndex: "name",
-      key: "name"
+      title: 'Name',
+      dataIndex: 'name',
+      key: 'name'
     },
     {
-      title: "Subject",
-      dataIndex: "subject",
-      key: "subject"
+      title: 'Language',
+      dataIndex: 'language',
+      key: 'language'
     },
     {
-      title: "Action",
-      key: "action",
+      title: 'Action',
+      key: 'action',
+      width: 200,
       render: (text, item) => (
         <span>
-          <Link to={`/lessons/${item._id}`}>
+          <Link to={`/lessons/${item.id}`}>
             <Button> Edit </Button>
           </Link>
           <Divider type="vertical" />
           <Button
             type="danger"
             onClick={() => {
-              showConfirm(() => {this.props.deleteLesson(item._id)});
+              showConfirm(() => {
+                deleteLesson({ variables: { id: item.id } })
+              })
             }}
           >
             Delete
@@ -54,82 +131,104 @@ class Lessons extends Component {
         </span>
       )
     }
-  ];
+  ]
 
-  showModal = () => {
-    this.setState({ modalVisible: true });
-  };
-
-  handleCancel = () => {
-    this.setState({ modalVisible: false });
-  };
-
-  handleCreate = () => {
-    const { form } = this.formRef.props;
-    form.validateFields((err, values) => {
-      if (err) {
-        return;
-      }
-      this.props.createLesson(values);
-      form.resetFields();
-      this.setState({ modalVisible: false });
-    });
-  };
-
-  saveFormRef = formRef => {
-    this.formRef = formRef;
-  };
-
-  handleFields = () => {
-    const options = this.props.subjects.map(subject => ({ value: subject._id, label: subject.name }));
+  const handleFields = () => {
     const fields = [
-      { key: "name", label: "Lesson Name" },
       {
-        key: "subject",
-        label: "Subject of the Lesson",
-        options,
+        key: 'name',
+        label: 'name'
+      },
+      {
+        key: 'imageUrl',
+        label: 'imageUrl'
+      },
+      {
+        key: 'language',
+        label: 'language',
+        type: 'select',
+        options: [
+          {
+            value: 'kazakh',
+            label: 'kazakh'
+          },
+          {
+            value: 'russian',
+            label: 'russian'
+          }
+        ]
+      },
+      {
+        key: 'subject',
+        label: 'subject',
+        type: 'select',
+        options:
+          data && data.subjects
+            ? data.subjects.map(subject => ({
+                label: subject.name,
+                value: subject.id
+              }))
+            : '',
+        isMultipleSelection: false
       }
-    ];
-    return fields;
-  };
-
-  render() {
-    return (
-      <DefaultStyledContainer>
-        <Table
-          dataSource={this.props.lessons}
-          columns={this.columns}
-          title={() => <Button onClick={this.showModal}>Add new Lesson</Button>}
-          onChange={this.handleTableChange}
-        />
-
-        <CreateForm
-          title="Add new Lesson"
-          wrappedComponentRef={this.saveFormRef}
-          visible={this.state.modalVisible}
-          onCancel={this.handleCancel}
-          onCreate={this.handleCreate}
-          fields={this.handleFields()}
-        />
-      </DefaultStyledContainer>
-    );
+    ]
+    return fields
   }
+
+  const showModal = () => {
+    setModalVisible(true)
+  }
+
+  const handleCancel = () => {
+    setModalVisible(false)
+  }
+
+  const handleCreate = () => {
+    formRef.validateFields((err, values) => {
+      if (err) {
+        return
+      }
+
+      addLesson({
+        variables: {
+          input: values
+        }
+      })
+
+      formRef.resetFields()
+      setModalVisible(false)
+    })
+  }
+
+  if (loading) return <div>Loading</div>
+  if (error) return <p>ERROR</p>
+
+  return (
+    <DefaultStyledContainer>
+      <Table
+        dataSource={
+          data && data.lessons
+            ? data.lessons.map(lesson => {
+                return { ...lesson, key: lesson.id }
+              })
+            : []
+        }
+        columns={columns}
+        title={() => (
+          <div>
+            <Button onClick={showModal}>Add new Lesson</Button>
+          </div>
+        )}
+      />
+
+      <CreateForm
+        title="Add new Lesson"
+        ref={saveFormRef}
+        visible={modalVisible}
+        onCancel={handleCancel}
+        onCreate={handleCreate}
+        fields={handleFields()}
+      />
+    </DefaultStyledContainer>
+  )
 }
-
-Lessons.propTypes = {
-  deleteLesson: PropTypes.func.isRequired,
-  fetchLessons: PropTypes.func.isRequired,
-  fetchSubjects: PropTypes.func.isRequired,
-  createLesson: PropTypes.func.isRequired,
-  lessons: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  subjects: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-};
-
-function mapStateToProps({lessons, subjects}) {
-  return { lessons, subjects };
-}
-
-export default connect(
-  mapStateToProps,
-  { fetchLessons, createLesson, deleteLesson, fetchSubjects }
-)(Lessons);

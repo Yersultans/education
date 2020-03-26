@@ -1,19 +1,18 @@
-import React from "react";
-import PropTypes from "prop-types";
+import React from 'react'
+import PropTypes from 'prop-types'
+import { Layout } from 'antd'
 
 const DefaultStyledContainer = ({ children }) => (
-  <div
-    style={{ minHeight: "calc(100vh - 48px)", backgroundColor: "transparent" }}
-  >
+  <Layout.Content style={{ padding: '0 20px 0 20px' }}>
     {children.children > 1 ? children.map(child => child) : children}
-  </div>
-);
+  </Layout.Content>
+)
 
 DefaultStyledContainer.propTypes = {
   children: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.node),
     PropTypes.node
   ]).isRequired
-};
+}
 
-export default DefaultStyledContainer;
+export default DefaultStyledContainer

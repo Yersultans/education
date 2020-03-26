@@ -1,13 +1,13 @@
-const mongoose = require("mongoose");
-const passportJWT = require("passport-jwt");
-const config = require("../config");
-const LocalStrategy = require("passport-local").Strategy;
+const mongoose = require('mongoose')
+const passportJWT = require('passport-jwt')
+const config = require('../config')
+const LocalStrategy = require('passport-local').Strategy
 
-const { Strategy: JWTStrategy, ExtractJwt } = passportJWT;
+const { Strategy: JWTStrategy, ExtractJwt } = passportJWT
 
 module.exports = passport => {
-  const User = mongoose.model("User");
-  passport.use(new LocalStrategy(User.authenticate()));
+  const User = mongoose.model('User')
+  passport.use(new LocalStrategy(User.authenticate()))
   passport.use(
     new JWTStrategy(
       {
@@ -19,7 +19,7 @@ module.exports = passport => {
           .then(user => cb(null, user))
           .catch(err => cb(err, null))
     )
-  );
-  passport.serializeUser(User.serializeUser());
-  passport.deserializeUser(User.deserializeUser());
-};
+  )
+  passport.serializeUser(User.serializeUser())
+  passport.deserializeUser(User.deserializeUser())
+}

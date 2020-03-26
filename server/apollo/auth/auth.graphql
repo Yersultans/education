@@ -1,0 +1,24 @@
+input RegisterUserInput {
+  username: String!
+  password: String!
+}
+
+input LoginUserInput {
+  username: String!
+  password: String!
+}
+
+type AuthData {
+  token: String!
+}
+
+extend type Query {
+  getCurrentUser: User!
+}
+
+extend type Mutation {
+  registerUser(input: RegisterUserInput): User!
+  loginUser(input: LoginUserInput): AuthData!
+  loginAdmin(input: LoginUserInput): AuthData!
+  logout: Response!
+}

@@ -1,105 +1,80 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import styled from 'styled-components';
-import { Button, Input, DatePicker } from 'antd';
-import { connect } from 'react-redux';
+import React from 'react'
+import styled from 'styled-components'
+import { useQuery, useMutation, gql } from '@apollo/client'
+import EditComponent from '../../components/EditComponent'
 
-import { fetchSubject, updateSubject } from '../../actions/subjects';
+import DefaultStyledContainer from '../../components/DefaultStyledContainer'
 
-const Container = styled.div`
-  width: 90%;
-  margin: 20px auto;
-  background-color: transparent,
-`;
-class Subject extends Component {
-
-  state = this.stateFromProps(this.props);
-
-  componentDidMount() {
-    this.props.fetchSubject(this.props.match.params.id);
-  }
-
-  componentWillReceiveProps(nextProps) {
-    this.setState(this.stateFromProps(nextProps));
-  }
-
-  stateFromProps(props) {
-    const subject = props.subject[this.props.match.params.id];
-    if (subject) {
-      return {
-        name: subject.name || "",
-        imgUrl: subject.imgUrl || ""
-      };
+const GET_SUBJECT = gql`
+  query getSubject($id: ID!) {
+    subject(id: $id) {
+      id
+      name
+      imageUrl
+      language
     }
-    return { name: "", imgUrl: "" };
   }
+`
 
-  handleInputChange = (key, value) => {
-    console.log("value", value);
-    this.setState({ [key]: value });
-  };
-
-  handleUpdateClick = () => {
-    console.log("timein hendle update: ", this.state.time);
-    this.props.updateSubject(this.props.match.params.id, {
-      name: this.state.name, 
-      imgUrl: this.state.imgUrl
-    });
-  };
-
-  render(){
-    const subject = this.props.subject[this.props.match.params.id];
-    if (!subject) {
-      return <Container>Subject not found</Container>;
+const UPDATE_SUBJECT = gql`
+  mutation updateSubject($id: ID!, $input: SubjectInput) {
+    updateSubject(id: $id, input: $input) {
+      id
+      name
+      imageUrl
+      language
     }
-    return (
-      <Container>
-        <div style={{ textAlign: 'left' }}>
-          <div>Name of the Subject:
-            <Input
-              placeholder="Name"
-              type="text"
-              value={this.state.name}
-              onChange={e => this.handleInputChange("name", e.target.value)}
-              style={{ marginBottom: 8 }}
-            />
-          </div>
-        </div>
-        <div style={{ textAlign: 'left' }}>
-          <div>Image of the Subject:
-            <Input
-              placeholder="Image URL"
-              type="text"
-              value={this.state.imgUrl}
-              onChange={e => this.handleInputChange("imgUrl", e.target.value)}
-              style={{ marginBottom: 8 }}
-            />
-          </div>
-        </div>
-
-        <Button
-          type="primary"
-          onClick={this.handleUpdateClick}
-          style={{ marginRight: 8 }}
-        >
-        Update
-        </Button>
-      </Container>
-    );
   }
+`
+
+export default function Subject(props) {
+  const { id } = props.match.params
+
+  const [updateSubject] = useMutation(UPDATE_SUBJECT)
+
+  const { data, loading, error } = useQuery(GET_SUBJECT, { variables: { id } })
+
+  if (loading) return <div>loading</div>
+  if (error) return <div>ERROR</div>
+
+  const fields = [
+    {
+      key: 'name',
+      label: 'Subject Name',
+      value: data && data.subject ? data.subject.name : '',
+      isRequired: true
+    },
+    {
+      key: 'imageUrl',
+      label: 'Subject ImageUrl',
+      value: data && data.subject ? data.subject.imageUrl : '',
+      isRequired: true
+    },
+    {
+      key: 'language',
+      label: 'Subject Language',
+      value: data && data.subject ? data.subject.language : '',
+      type: 'select',
+      options: [
+        {
+          value: 'kazakh',
+          label: 'kazakh'
+        },
+        {
+          value: 'russian',
+          label: 'russian'
+        }
+      ]
+    }
+  ]
+
+  const handleUpdateClick = values => {
+    updateSubject({ variables: { id, input: values } })
+  }
+
+  return (
+    <DefaultStyledContainer>
+      <EditComponent fields={fields} onUpdateClick={handleUpdateClick} />
+    </DefaultStyledContainer>
+  )
 }
-
-Subject.propTypes = {
-  subject: PropTypes.shape({}).isRequired,
-  fetchSubject: PropTypes.func.isRequired,
-  match: PropTypes.shape({
-    params: PropTypes.shape({
-      id: PropTypes.string.isRequired
-    }).isRequired
-  }).isRequired,
-  updateSubject: PropTypes.func.isRequired
-}
-
-const mapStateToProps = ({ subject }) => ({ subject });
-
-export default connect(mapStateToProps, { fetchSubject, updateSubject })(Subject);

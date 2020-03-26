@@ -1,40 +1,40 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
-import { connect } from "react-redux";
-import { Layout, Menu, Icon } from "antd";
+import React, { useState, useContext } from 'react'
+import { Link } from 'react-router-dom'
+import { Layout, Menu, Icon } from 'antd'
+import AuthContext from '../context/AuthContext'
 
-import { logout as logoutAction } from "../actions/auth";
+const adminMenu = [
+  { link: '/users', name: 'Users', icon: 'user' },
+  { link: '/questions', name: 'Questions', icon: 'question-circle' },
+  { link: '/subjects', name: 'Subjects', icon: 'cluster' },
+  { link: '/lessons', name: 'Lessons', icon: 'book' }
+]
 
-const menuItems = [
-  { link: "/users", name: "Users", icon: "user" },
-  { link: "/subjects", name: "Subjects", icon: "book" },
-  { link: "/lessons", name: "Lessons", icon: "bank" },
-  { link: "/questions", name: "Questions", icon: ""}
-];
+const contentManagerMenu = [
+  { link: '/questions', name: 'Questions', icon: 'question-circle' },
+  { link: '/subjects', name: 'Subjects', icon: 'cluster' },
+  { link: '/lessons', name: 'Lessons', icon: 'book' }
+]
 
-class Header extends Component {
-  state = {
-    current: ""
-  };
+function Header(props) {
+  const [current, setCurrent] = useState('')
+  const { currentUser } = useContext(AuthContext)
 
-  handleClick = e => {
-    this.setState({
-      current: e.key
-    });
-  };
+  const handleClick = e => {
+    setCurrent(e.key)
+  }
 
-  renderContent() {
-    if (this.props.auth) {
+  const renderContent = () => {
+    if (currentUser) {
       return (
         <Menu
-          onClick={this.handleClick}
-          selectedKeys={[this.state.current]}
+          onClick={handleClick}
+          selectedKeys={[current]}
           mode="horizontal"
           theme="dark"
         >
-          {this.props.auth.role === "admin" &&
-            menuItems.map(item => (
+          {currentUser.role === 'admin' &&
+            adminMenu.map(item => (
               <Menu.Item key={item.name}>
                 <Link to={item.link} key={item.link}>
                   <Icon type={item.icon} /> {item.name}
@@ -42,23 +42,30 @@ class Header extends Component {
               </Menu.Item>
             ))}
 
-          <Menu.Item
-            key="logout"
-            style={{ position: "absolute", top: 0, right: 50 }}
-          >
-            <a href="/" onClick={this.props.logout}>
+          {currentUser.role === 'contentManager' &&
+            contentManagerMenu.map(item => (
+              <Menu.Item key={item.name}>
+                <Link to={item.link} key={item.link}>
+                  <Icon type={item.icon} /> {item.name}
+                </Link>
+              </Menu.Item>
+            ))}
+
+          <Menu.Item key="logout">
+            <div onClick={props.logout}>
               <Icon type="logout" /> Log Out
-            </a>
+            </div>
           </Menu.Item>
         </Menu>
-      );
+      )
     }
+
     return (
       <a
         style={{
           height: 46,
-          lineHeight: "46px",
-          position: "absolute",
+          lineHeight: '46px',
+          position: 'absolute',
           top: 0,
           right: 50
         }}
@@ -66,38 +73,10 @@ class Header extends Component {
       >
         <Icon type="login" /> Login
       </a>
-    );
+    )
   }
 
-  render() {
-    return (
-      <Layout.Header style={{ height: 46 }}>
-        {this.renderContent()}
-      </Layout.Header>
-    );
-  }
+  return <Layout.Header style={{ height: 46 }}>{renderContent()}</Layout.Header>
 }
 
-Header.propTypes = {
-  auth: PropTypes.shape({
-    role: PropTypes.string
-  }),
-  logout: PropTypes.func.isRequired
-};
-
-Header.defaultProps = {
-  auth: {}
-};
-
-function mapStateToProps({ auth }) {
-  return { auth };
-}
-
-const mapDispatchToProps = dispatch => ({
-  logout: () => logoutAction(dispatch)
-});
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Header);
+export default Header

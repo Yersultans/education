@@ -1,6 +1,6 @@
 const randomInRange = (from, to) => {
-  const r = Math.random();
-  return Math.floor(r * (to - from) + from);
-};
+  const r = Math.random()
+  return Math.floor(r * (to - from) + from)
+}
 
-export default randomInRange;
+export default randomInRange

@@ -1,6 +1,6 @@
-const express = require("express");
+const express = require('express')
 
-const router = express.Router();
+const router = express.Router()
 
 const {
   getQuestions,
@@ -8,12 +8,12 @@ const {
   addQuestion,
   updateQuestion,
   deleteQuestion
-} = require("../controllers/question");
+} = require('../controllers/question')
 
-router.get("/questions", getQuestions);
-router.get("/questions/:questionId", getQuestion);
-router.post("/questions", addQuestion);
-router.post("/questions/:questionId", updateQuestion);
-router.delete("/questions/questionId", deleteQuestion);
+router.get('/questions', getQuestions)
+router.get('/questions/:questionId', getQuestion)
+router.post('/questions', addQuestion)
+router.post('/questions/:questionId', updateQuestion)
+router.delete('/questions/questionId', deleteQuestion)
 
-module.exports = router;
+module.exports = router

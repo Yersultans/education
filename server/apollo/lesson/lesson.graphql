@@ -1,0 +1,27 @@
+type Lesson {
+  id: ID!
+  name: String
+  content: String
+  imageUrl: String
+  language: String
+  subject: Subject
+}
+
+input LessonInput {
+  name: String
+  content: String
+  imageUrl: String
+  language: String
+  subject: ID
+}
+
+extend type Query {
+  lessons: [Lesson]!
+  lesson(id: ID!): Lesson!
+}
+
+extend type Mutation {
+  addLesson(input: LessonInput): Lesson!
+  updateLesson(id: ID!, input: LessonInput): Lesson!
+  deleteLesson(id: ID!): ID!
+}

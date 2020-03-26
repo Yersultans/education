@@ -1,6 +1,6 @@
-const express = require("express");
+const express = require('express')
 
-const router = express.Router();
+const router = express.Router()
 
 const {
   getForms,
@@ -8,12 +8,12 @@ const {
   addForm,
   updateForm,
   deleteForm
-} = require("../controllers/form");
+} = require('../controllers/form')
 
-router.get("/forms", getForms);
-router.get("/forms/:formId", getForm);
-router.post("/forms", addForm);
-router.post("/forms/:formId", updateForm);
-router.delete("/forms/:formId", deleteForm);
+router.get('/forms', getForms)
+router.get('/forms/:formId', getForm)
+router.post('/forms', addForm)
+router.post('/forms/:formId', updateForm)
+router.delete('/forms/:formId', deleteForm)
 
-module.exports = router;
+module.exports = router

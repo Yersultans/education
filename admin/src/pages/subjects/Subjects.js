@@ -1,47 +1,99 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Button, Divider, Table } from 'antd';
-import { connect } from "react-redux";
-import { Link } from "react-router-dom";
+import React, { useState, useCallback } from 'react'
+import { useQuery, useMutation, gql } from '@apollo/client'
+import { Link } from 'react-router-dom'
+import { Table, Button, Divider } from 'antd'
 
-import CreateForm from "../../components/CreateForm";
-import DefaultStyledContainer from '../../components/DefaultStyledContainer';
-import showConfirm from '../../components/DeleteFromTableFunc';
-import { createSubject, fetchSubjects, deleteSubject } from '../../actions/subjects';
+import CreateForm from '../../components/CreateForm'
+import DefaultStyledContainer from '../../components/DefaultStyledContainer'
+import showConfirm from '../../components/DeleteFromTableFunc'
 
-class Subjects extends Component{
-  state = {
-    modalVisible: false
+const GET_SUBJECTS = gql`
+  query getSubjects {
+    subjects {
+      id
+      name
+      language
+    }
   }
+`
 
-  componentDidMount() {
-    this.props.fetchSubjects();
+const DELETE_SUBJECT = gql`
+  mutation deleteSubject($id: ID!) {
+    deleteSubject(id: $id)
   }
+`
 
-  columns = [
+const ADD_SUBJECT = gql`
+  mutation addSubject($input: SubjectInput) {
+    addSubject(input: $input) {
+      id
+      name
+      language
+    }
+  }
+`
+
+export default function Subjects() {
+  const [modalVisible, setModalVisible] = useState(false)
+  const [formRef, setFormRef] = useState(null)
+
+  const [addSubject] = useMutation(ADD_SUBJECT, {
+    update(cache, { data: { addSubject: subject } }) {
+      const { subjects } = cache.readQuery({ query: GET_SUBJECTS })
+      cache.writeQuery({
+        query: GET_SUBJECTS,
+        data: { subjects: subjects.concat([subject]) }
+      })
+    }
+  })
+
+  const [deleteSubject] = useMutation(DELETE_SUBJECT, {
+    update(cache, { data: { deleteSubject: id } }) {
+      const { subjects } = cache.readQuery({ query: GET_SUBJECTS })
+      cache.writeQuery({
+        query: GET_SUBJECTS,
+        data: {
+          subjects: subjects.filter(subject => subject.id !== id)
+        }
+      })
+    }
+  })
+
+  const saveFormRef = useCallback(node => {
+    if (node !== null) {
+      setFormRef(node)
+    }
+  }, [])
+
+  const { data, loading, error } = useQuery(GET_SUBJECTS)
+
+  const columns = [
     {
-      title: "Name",
-      dataIndex: "name",
-      key: "name"
+      title: 'Name',
+      dataIndex: 'name',
+      key: 'name'
     },
     {
-      title: "Image URL",
-      dataIndex: "imgUrl",
-      key: "imgUrl"
+      title: 'Language',
+      dataIndex: 'language',
+      key: 'language'
     },
     {
-      title: "Action",
-      key: "action",
+      title: 'Action',
+      key: 'action',
+      width: 200,
       render: (text, item) => (
         <span>
-          <Link to={`/subjects/${item._id}`}>
+          <Link to={`/subjects/${item.id}`}>
             <Button> Edit </Button>
           </Link>
           <Divider type="vertical" />
           <Button
             type="danger"
             onClick={() => {
-              showConfirm(() => {this.props.deleteSubject(item._id)});
+              showConfirm(() => {
+                deleteSubject({ variables: { id: item.id } })
+              })
             }}
           >
             Delete
@@ -49,70 +101,91 @@ class Subjects extends Component{
         </span>
       )
     }
-  ];
+  ]
 
-  fields = [
-    { key: "name", label: "Subject Name" },
-    { key: "imgUrl", label: "Subject Image URL" }
-  ];
-
-  showModal = () => {
-    this.setState({ modalVisible: true });
-  };
-
-  handleCancel = () => {
-    this.setState({ modalVisible: false });
-  };
-
-  handleCreate = () => {
-    const { form } = this.formRef.props;
-    form.validateFields((err, values) => {
-      if (err) {
-        return;
+  const handleFields = () => {
+    const fields = [
+      {
+        key: 'name',
+        label: 'name'
+      },
+      {
+        key: 'imageUrl',
+        label: 'imageUrl'
+      },
+      {
+        key: 'language',
+        label: 'language',
+        type: 'select',
+        options: [
+          {
+            value: 'kazakh',
+            label: 'kazakh'
+          },
+          {
+            value: 'russian',
+            label: 'russian'
+          }
+        ]
       }
-      this.props.createSubject(values);
-      form.resetFields();
-      this.setState({ modalVisible: false });
-    });
-  };
-
-  saveFormRef = formRef => {
-    this.formRef = formRef;
-  };
-
-  render() {
-    console.log('subjects: ', this.props.subjects)
-    return (
-      <DefaultStyledContainer>
-        <Table
-          dataSource={this.props.subjects}
-          columns={this.columns}
-          title={() => <Button onClick={this.showModal}>Add new Subject</Button>}
-          onChange={this.handleTableChange}
-        />
-
-        <CreateForm
-          title="Add new Subject"
-          wrappedComponentRef={this.saveFormRef}
-          visible={this.state.modalVisible}
-          onCancel={this.handleCancel}
-          onCreate={this.handleCreate}
-          fields={this.fields}
-        />
-      </DefaultStyledContainer>
-    );
+    ]
+    return fields
   }
 
+  const showModal = () => {
+    setModalVisible(true)
+  }
+
+  const handleCancel = () => {
+    setModalVisible(false)
+  }
+
+  const handleCreate = () => {
+    formRef.validateFields((err, values) => {
+      if (err) {
+        return
+      }
+
+      addSubject({
+        variables: {
+          input: values
+        }
+      })
+
+      formRef.resetFields()
+      setModalVisible(false)
+    })
+  }
+
+  if (loading) return <div>Loading</div>
+  if (error) return <p>ERROR</p>
+
+  return (
+    <DefaultStyledContainer>
+      <Table
+        dataSource={
+          data && data.subjects
+            ? data.subjects.map(subject => {
+                return { ...subject, key: subject.id }
+              })
+            : []
+        }
+        columns={columns}
+        title={() => (
+          <div>
+            <Button onClick={showModal}>Add new Subject</Button>
+          </div>
+        )}
+      />
+
+      <CreateForm
+        title="Add new Subject"
+        ref={saveFormRef}
+        visible={modalVisible}
+        onCancel={handleCancel}
+        onCreate={handleCreate}
+        fields={handleFields()}
+      />
+    </DefaultStyledContainer>
+  )
 }
-
-Subjects.propTypes = {
-  subjects: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  createSubject: PropTypes.func.isRequired,
-  deleteSubject: PropTypes.func.isRequired,
-  fetchSubjects: PropTypes.func.isRequired,
-}
-
-const mapStateToProps = ({ subjects }) =>( { subjects }) ;
-
-
-export default connect(mapStateToProps, { fetchSubjects, createSubject, deleteSubject })(Subjects);

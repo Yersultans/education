@@ -1,0 +1,25 @@
+type FormMessage {
+  id: ID!
+  content: String
+  user: User
+  messages: [FormMessage]
+  createdAt: String
+  updateAt: String
+}
+
+input FormMessageInput {
+  content: String
+  user: ID
+  messages: [ID]
+}
+
+extend type Query {
+  formMessages: [FormMessage]!
+  formMessage(id: ID!): FormMessage!
+}
+
+extend type Mutation {
+  addFormMessage(input: FormMessageInput): FormMessage!
+  updateFormMessage(id: ID!, input: FormMessageInput): FormMessage!
+  deleteFormMessage(id: ID!): ID!
+}

@@ -1,73 +1,100 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { Form, Input, Button, Icon, Row, Col } from "antd";
-import { connect } from "react-redux";
-import { withRouter } from "react-router-dom";
-import { registerUser } from "../../actions/auth";
+import React, { useContext, useEffect } from 'react'
+import PropTypes from 'prop-types'
+import { Form, Input, Button, Icon, Row, Col } from 'antd'
+import { withRouter } from 'react-router-dom'
+import { useMutation, gql } from '@apollo/client'
 
-const FormItem = Form.Item;
+import MessagesContext from '../../context/MessagesContext'
 
-class Register extends Component {
-  handleSubmit = e => {
-    e.preventDefault();
-    this.props.form.validateFields((err, values) => {
-      if (!err) {
-        this.props.registerUser(values, this.props.history);
-      }
-    });
-  };
+const FormItem = Form.Item
 
-  render() {
-    const { getFieldDecorator } = this.props.form;
-
-    return (
-      <Row type="flex" justify="center">
-        <Col span={6}>
-          <Form onSubmit={this.handleSubmit} className="login-form">
-            <FormItem>
-              {getFieldDecorator("username", {
-                rules: [
-                  { required: true, message: "Please input your username!" }
-                ]
-              })(
-                <Input
-                  prefix={
-                    <Icon type="user" style={{ color: "rgba(0,0,0,.25)" }} />
-                  }
-                  placeholder="Username"
-                />
-              )}
-            </FormItem>
-            <FormItem>
-              {getFieldDecorator("password", {
-                rules: [
-                  { required: true, message: "Please input your Password!" }
-                ]
-              })(
-                <Input
-                  prefix={
-                    <Icon type="lock" style={{ color: "rgba(0,0,0,.25)" }} />
-                  }
-                  type="password"
-                  placeholder="Password"
-                />
-              )}
-            </FormItem>
-            <FormItem>
-              <Button
-                type="primary"
-                htmlType="submit"
-                className="login-form-button"
-              >
-                Register
-              </Button>
-              Or <a href="/login">login now!</a>
-            </FormItem>
-          </Form>
-        </Col>
-      </Row>
-    );
+const REGISTER = gql`
+  mutation register($input: RegisterUserInput) {
+    registerUser(input: $input) {
+      id
+    }
   }
+`
+
+function Register(props) {
+  const [register, { data, error, loading }] = useMutation(REGISTER)
+  const { displayMessage } = useContext(MessagesContext)
+
+  const handleSubmit = e => {
+    e.preventDefault()
+    props.form.validateFields((err, values) => {
+      if (!err) {
+        register({
+          variables: {
+            input: values
+          },
+          errorPolicy: 'all'
+        })
+      }
+    })
+  }
+
+  useEffect(() => {
+    if (!loading && error) {
+      displayMessage({ type: 'error', message: JSON.stringify(error.message) })
+    } else if (data && data.registerUser && data.registerUser.id) {
+      displayMessage({
+        type: 'notify',
+        message: 'Registration successful, please, login'
+      })
+      props.history.push('/login')
+    }
+  }, [data, loading, error])
+
+  const { getFieldDecorator } = props.form
+
+  return (
+    <Row type="flex" justify="center">
+      <Col span={6}>
+        <Form onSubmit={handleSubmit} className="login-form">
+          <FormItem>
+            {getFieldDecorator('username', {
+              rules: [
+                { required: true, message: 'Please input your username!' }
+              ]
+            })(
+              <Input
+                prefix={
+                  <Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />
+                }
+                placeholder="Username"
+              />
+            )}
+          </FormItem>
+          <FormItem>
+            {getFieldDecorator('password', {
+              rules: [
+                { required: true, message: 'Please input your Password!' }
+              ]
+            })(
+              <Input
+                prefix={
+                  <Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />
+                }
+                type="password"
+                placeholder="Password"
+              />
+            )}
+          </FormItem>
+          <FormItem>
+            <Button
+              type="primary"
+              htmlType="submit"
+              className="login-form-button"
+            >
+              Register
+            </Button>
+            Or <a href="/login">login now!</a>
+          </FormItem>
+        </Form>
+      </Col>
+    </Row>
+  )
 }
 
 Register.propTypes = {
@@ -75,11 +102,9 @@ Register.propTypes = {
     validateFields: PropTypes.func.isRequired,
     getFieldDecorator: PropTypes.shape({}).isRequired
   }).isRequired,
-  registerUser: PropTypes.func.isRequired,
-  history: PropTypes.shape({}).isRequired
-};
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired
+  }).isRequired
+}
 
-export default connect(
-  null,
-  { registerUser }
-)(Form.create()(withRouter(Register)));
+export default Form.create()(withRouter(Register))

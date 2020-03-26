@@ -1,11 +1,11 @@
-import React, { PureComponent } from "react";
-import { Helmet } from "react-helmet";
+import React, { PureComponent } from 'react'
+import { Helmet } from 'react-helmet'
 
 const withHelmet = options => ComposedComponent =>
   class WithHelmet extends PureComponent {
     renderTags = ({ tag: HtmlTag, content }) => (
       <HtmlTag key={HtmlTag}>{content}</HtmlTag>
-    );
+    )
 
     render() {
       return (
@@ -13,8 +13,8 @@ const withHelmet = options => ComposedComponent =>
           <Helmet>{options.map(this.renderTags)}</Helmet>
           <ComposedComponent {...this.props} />
         </React.Fragment>
-      );
+      )
     }
-  };
+  }
 
-export default withHelmet;
+export default withHelmet

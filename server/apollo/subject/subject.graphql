@@ -1,0 +1,23 @@
+type Subject {
+  id: ID!
+  name: String
+  imageUrl: String
+  language: String
+}
+
+input SubjectInput {
+  name: String
+  imageUrl: String
+  language: String
+}
+
+extend type Query {
+  subjects: [Subject]!
+  subject(id: ID!): Subject!
+}
+
+extend type Mutation {
+  addSubject(input: SubjectInput): Subject!
+  updateSubject(id: ID!, input: SubjectInput): Subject!
+  deleteSubject(id: ID!): ID!
+}

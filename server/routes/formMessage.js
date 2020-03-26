@@ -1,6 +1,6 @@
-const express = require("express");
+const express = require('express')
 
-const router = express.Router();
+const router = express.Router()
 
 const {
   getFormMessages,
@@ -8,12 +8,12 @@ const {
   addFormMessage,
   updateFormMessage,
   deleteFormMessage
-} = require("../controllers/formMessage");
+} = require('../controllers/formMessage')
 
-router.get("/formMessages", getFormMessages);
-router.get("/formMessages/:formMessageId", getFormMessage);
-router.post("/formMessages", addFormMessage);
-router.post("/formMessages/:formMessageId", updateFormMessage);
-router.delete("/formMessages/:formMessageId", deleteFormMessage);
+router.get('/formMessages', getFormMessages)
+router.get('/formMessages/:formMessageId', getFormMessage)
+router.post('/formMessages', addFormMessage)
+router.post('/formMessages/:formMessageId', updateFormMessage)
+router.delete('/formMessages/:formMessageId', deleteFormMessage)
 
-module.exports = router;
+module.exports = router

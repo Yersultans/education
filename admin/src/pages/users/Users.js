@@ -1,21 +1,18 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { Table, Button, Divider, Input, Icon, Select } from "antd";
-import { connect } from "react-redux";
-import { Link } from "react-router-dom";
-import styled from "styled-components";
-import showConfirm from "../../components/DeleteFromTableFunc";
-import CreateForm from "../../components/CreateForm";
-import DefaultStyledContainer from "../../components/DefaultStyledContainer";
-import {
-  fetchUsers,
-  createUser,
-  deleteUser
-} from "../../actions/users";
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
+import { Table, Button, Divider, Input, Icon, Select } from 'antd'
+import { connect } from 'react-redux'
+import { Link } from 'react-router-dom'
+import styled from 'styled-components'
+import showConfirm from '../../components/DeleteFromTableFunc'
+import CreateForm from '../../components/CreateForm'
+import DefaultStyledContainer from '../../components/DefaultStyledContainer'
+import ImportStudents from '../../components/ImportStudents'
+import { fetchUsers, createUser, deleteUser } from '../../actions/users'
 
-import randomInRange from "../../utils";
+import randomInRange from '../../utils'
 
-const { Option } = Select;
+const { Option } = Select
 
 const CustomFilterDropdown = styled.div`
   padding: 8px;
@@ -34,152 +31,160 @@ const CustomFilterDropdown = styled.div`
       margin-right: 0;
     }
   }
-`;
+`
 
 class Users extends Component {
   state = {
     modalVisible: false,
     importModalVisible: false,
-    searchText: { userName: "", name: "" },
+    searchText: { userName: '', name: '' },
     failedEmails: [],
     isFinishedImport: false,
     pagination: {},
     loading: true
-  };
+  }
 
   static getDerivedStateFromProps(props, state) {
-    const pagination = { ...state.pagination };
-    pagination.total = props.users.total;
+    const pagination = { ...state.pagination }
+    pagination.total = props.users.total
 
     return {
       loading: false,
       pagination
-    };
+    }
   }
 
   componentDidMount() {
-    this.props.fetchUsers({ ...this.state.searchText });
+    this.props.fetchUsers({ ...this.state.searchText })
   }
 
   onFilterDropdownVisibleChange = visible => {
     if (visible) {
       setTimeout(() => {
-        this.searchInput.focus();
-      });
+        this.searchInput.focus()
+      })
     }
-  };
+  }
 
   handleSearch = (key, selectedKeys, confirm) => () => {
-    confirm();
-    this.props.fetchUsers({});
-  };
+    const newState = { ...this.state.searchText, [key]: selectedKeys[0] }
+    // eslint-disable-next-line
+    confirm()
+    this.setState({ searchText: newState })
+    this.props.fetchUsers({ ...newState })
+  }
 
   handleReset = (key, clearFilters) => () => {
-    clearFilters();
+    clearFilters()
     // eslint-disable-next-line
-    this.setState({ searchText: { ...this.state.searchText, [key]: "" } });
-  };
+    this.setState({ searchText: { ...this.state.searchText, [key]: '' } })
+  }
 
-  fields = [
-    {
-      key: "firstName",
-      label: "FirstName"
-    },
-    {
-      key: "lastName",
-      label: "LastName"
-    },
-    {
-      key: "parentEmail",
-      label: "Parent email"
-    },
-    {
-      key: "birthDate",
-      label: "Birthdate",
-      inputType: "date"
-    },
-    {
-      key: "role",
-      label: "User Role",
-      options: [
-        { value: "user", label: "User" },
-        { value: "admin", label: "Admin" },
-        { value: "reviewer", label: "Reviewer" },
-        { value: "teacher", label: "Teacher" }
-      ]
-    }
-  ];
+  handleFields = () => {
+    const fields = [
+      {
+        key: 'firstName',
+        label: 'FirstName'
+      },
+      {
+        key: 'lastName',
+        label: 'LastName'
+      },
+      {
+        key: 'parentEmail',
+        label: 'Parent email'
+      },
+      {
+        key: 'birthDate',
+        label: 'Birthdate',
+        inputType: 'date'
+      },
+      {
+        key: 'role',
+        label: 'User Role',
+        options: [
+          { value: 'admin', label: 'Admin' },
+          { value: 'reviewer', label: 'Reviewer' },
+          { value: 'teacher', label: 'Teacher' },
+          { value: 'schoolAdmin', label: 'School Admin' },
+          { value: 'schoolUser', label: 'School User' },
+          { value: 'contentManager', label: 'Content Manager' }
+        ]
+      }
+    ]
+    return fields
+  }
 
   showModal = () => {
-    this.setState({ modalVisible: true });
-  };
+    this.setState({ modalVisible: true })
+  }
 
   showImportUsersModal = () => {
-    this.setState({ importModalVisible: true });
-  };
+    this.setState({ importModalVisible: true })
+  }
 
   handleCancel = () => {
-    this.setState({ modalVisible: false, importModalVisible: false });
-  };
+    this.setState({ modalVisible: false, importModalVisible: false })
+  }
 
   handleCreateStudents = async students => {
     try {
-      const failedEmails = [];
+      const failedEmails = []
       const newData = await Promise.all(
         students.map(
           item =>
             new Promise(resolve => {
               this.props.createUser(item).then(data => {
                 if (data) {
-                  return resolve(data.username);
+                  return resolve(data.username)
                 }
-                failedEmails.push(item.parentEmail);
-                return resolve(null);
-              });
+                failedEmails.push(item.parentEmail)
+                return resolve(null)
+              })
             })
         )
-      );
-      this.setState({ failedEmails, isFinishedImport: true });
-      return newData;
+      )
+      this.setState({ failedEmails, isFinishedImport: true })
+      return newData
     } catch (err) {
       /* eslint-disable-next-line */
-      console.log("err: ", err);
+      console.log('err: ', err)
     }
-    return null;
-  };
+    return null
+  }
 
   handleCreate = async () => {
-    const { form } = this.formRef.props;
+    const { form } = this.formRef.props
     form.validateFields(async (err, values) => {
       if (err) {
-        return;
+        return
       }
       const editedValues = {
         ...values,
         password:
           `${values.firstName}${values.lastName}`
-            .replace(/ /g, "")
+            .replace(/ /g, '')
             .toLowerCase()
-            .split("@")[0] + randomInRange(100, 999),
+            .split('@')[0] + randomInRange(100, 999),
         username: `${values.firstName}${values.lastName}`
-          .replace(/ /g, "")
+          .replace(/ /g, '')
           .toLowerCase()
-      };
-      const res = await this.props.createUser(editedValues);
-      form.resetFields();
+      }
+      const res = await this.props.createUser(editedValues)
+      form.resetFields()
       this.setState({
         newUserData: {
           password: editedValues.password,
           username: res.username,
-          result: "User created"
+          result: 'User created'
         }
-      });
-    });
-  };
+      })
+    })
+  }
 
   saveFormRef = formRef => {
-    this.formRef = formRef;
-  };
+    this.formRef = formRef
+  }
 
   filterUserDropdown = ({
     setSelectedKeys,
@@ -194,19 +199,19 @@ class Users extends Component {
         placeholder="Search user"
         value={selectedKeys[0]}
         onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-        onPressEnter={this.handleSearch("userName", selectedKeys, confirm)}
+        onPressEnter={this.handleSearch('userName', selectedKeys, confirm)}
       />
       <Button
         type="primary"
-        onClick={this.handleSearch("userName", selectedKeys, confirm)}
+        onClick={this.handleSearch('userName', selectedKeys, confirm)}
       >
         Search
       </Button>
-      <Button onClick={this.handleReset("userName", clearFilters)}>
+      <Button onClick={this.handleReset('userName', clearFilters)}>
         Reset
       </Button>
     </CustomFilterDropdown>
-  );
+  )
 
   filterNameDropdown = ({
     setSelectedKeys,
@@ -221,65 +226,71 @@ class Users extends Component {
         placeholder="Search name"
         value={selectedKeys[0]}
         onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-        onPressEnter={this.handleSearch("name", selectedKeys, confirm)}
+        onPressEnter={this.handleSearch('name', selectedKeys, confirm)}
       />
       <Button
         type="primary"
-        onClick={this.handleSearch("name", selectedKeys, confirm)}
+        onClick={this.handleSearch('name', selectedKeys, confirm)}
       >
         Search
       </Button>
-      <Button onClick={this.handleReset("name", clearFilters)}>Reset</Button>
+      <Button onClick={this.handleReset('name', clearFilters)}>Reset</Button>
     </CustomFilterDropdown>
-  );
+  )
 
   handleTableChange = pagination => {
-    const pager = { ...this.state.pagination };
-    pager.current = pagination.current;
+    const pager = { ...this.state.pagination }
+    pager.current = pagination.current
     this.setState({
       pagination: pager,
       loading: true
-    });
+    })
     this.props.fetchUsers({
       page: pager.current,
       ...this.state.searchText
-    });
-  };
+    })
+  }
 
   filterIcon = filtered => (
-    <Icon type="search-o" style={{ color: filtered ? "#108ee9" : "#aaa" }} />
-  );
+    <Icon type="search-o" style={{ color: filtered ? '#108ee9' : '#aaa' }} />
+  )
 
   render() {
     const columns = [
       {
-        title: "Username",
-        dataIndex: "username",
-        key: "username",
+        title: 'Username',
+        dataIndex: 'username',
+        key: 'username',
         filterDropdown: this.filterUserDropdown,
         filterIcon: this.filterIcon,
         width: 200,
         onFilterDropdownVisibleChange: this.onFilterDropdownVisibleChange
       },
       {
-        title: "Name",
-        dataIndex: "name",
-        key: "name",
+        title: 'Name',
+        dataIndex: 'name',
+        key: 'name',
         width: 175,
         filterDropdown: this.filterNameDropdown,
         filterIcon: this.filterIcon,
         onFilterDropdownVisibleChange: this.onFilterDropdownVisibleChange
       },
       {
-        title: "Wupai",
-        dataIndex: "wupai",
-        key: "wupai",
-        width: 75,
-        render: text => <div style={{ textAlign: "center" }}> {text} </div>
+        title: 'Role',
+        dataIndex: 'role',
+        key: 'role',
+        width: 100
       },
       {
-        title: "Action",
-        key: "action",
+        title: 'Wupai',
+        dataIndex: 'wupai',
+        key: 'wupai',
+        width: 75,
+        render: text => <div style={{ textAlign: 'center' }}> {text} </div>
+      },
+      {
+        title: 'Action',
+        key: 'action',
         width: 200,
         render: (text, item) => (
           <span>
@@ -296,7 +307,7 @@ class Users extends Component {
           </span>
         )
       }
-    ];
+    ]
     return (
       <DefaultStyledContainer>
         <Table
@@ -311,7 +322,7 @@ class Users extends Component {
               <Button onClick={this.showModal}>Add new User</Button>
               <Button
                 onClick={this.showImportUsersModal}
-                style={{ marginLeft: "8px" }}
+                style={{ marginLeft: '8px' }}
               >
                 Import from CSV
               </Button>
@@ -325,11 +336,19 @@ class Users extends Component {
           visible={this.state.modalVisible}
           onCancel={this.handleCancel}
           onCreate={this.handleCreate}
-          fields={this.fields}
+          fields={this.handleFields()}
           dataToDisplay={this.state.newUserData}
         />
+        <ImportStudents
+          title="Import students"
+          visible={this.state.importModalVisible}
+          onCancel={this.handleCancel}
+          onOk={this.handleCreateStudents}
+          failedEmails={this.state.failedEmails}
+          isFinishedImport={this.state.isFinishedImport}
+        />
       </DefaultStyledContainer>
-    );
+    )
   }
 }
 
@@ -341,13 +360,14 @@ Users.propTypes = {
     PropTypes.shape({ docs: PropTypes.array }),
     PropTypes.arrayOf(PropTypes.shape({}))
   ]).isRequired
-};
-
-function mapStateToProps({ users}) {
-  return { users };
 }
 
-export default connect(
-  mapStateToProps,
-  { fetchUsers, createUser, deleteUser }
-)(Users);
+function mapStateToProps({ users }) {
+  return { users }
+}
+
+export default connect(mapStateToProps, {
+  fetchUsers,
+  createUser,
+  deleteUser
+})(Users)
