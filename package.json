@@ -71,7 +71,6 @@
     "supertest": "^3.4.2"
   },
   "devDependencies": {
-    "babel-eslint": "^10.1.0",
     "eslint": "^6.4.0",
     "eslint-config-airbnb": "^16.1.0",
     "eslint-config-prettier": "^6.7.0",
