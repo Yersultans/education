@@ -17,9 +17,6 @@ const app = express()
 const MongoStore = connectMongo(session)
 const io = socket()
 
-// database models
-// require('./models')
-
 const mongoUrl = config.getMongoEndpoint()
 mongoose.connect(mongoUrl, { useNewUrlParser: true, useFindAndModify: false })
 
