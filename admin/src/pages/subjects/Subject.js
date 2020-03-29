@@ -1,9 +1,13 @@
-import React from 'react'
+import React, { useState, useCallback } from 'react'
 import styled from 'styled-components'
 import { useQuery, useMutation, gql } from '@apollo/client'
 import EditComponent from '../../components/EditComponent'
+import { Tabs, Icon } from 'antd'
+import Lessons from '../lessons/Lessons'
 
 import DefaultStyledContainer from '../../components/DefaultStyledContainer'
+
+const { TabPane } = Tabs
 
 const GET_SUBJECT = gql`
   query getSubject($id: ID!) {
@@ -29,6 +33,8 @@ const UPDATE_SUBJECT = gql`
 
 export default function Subject(props) {
   const { id } = props.match.params
+
+  const [currentTab, setCurrentTab] = useState('1')
 
   const [updateSubject] = useMutation(UPDATE_SUBJECT)
 
@@ -72,9 +78,36 @@ export default function Subject(props) {
     updateSubject({ variables: { id, input: values } })
   }
 
+  const handleTabChange = activeKey => {
+    setCurrentTab(activeKey)
+  }
+
   return (
     <DefaultStyledContainer>
-      <EditComponent fields={fields} onUpdateClick={handleUpdateClick} />
+      <Tabs activityKey={currentTab} onChange={handleTabChange}>
+        <TabPane
+          tab={
+            <span>
+              <Icon type="project" />
+              Subject
+            </span>
+          }
+          key="1"
+        >
+          <EditComponent fields={fields} onUpdateClick={handleUpdateClick} />
+        </TabPane>
+        <TabPane
+          key="2"
+          tab={
+            <span>
+              <Icon type="book" />
+              Lessons
+            </span>
+          }
+        >
+          <Lessons subjectId={id} />
+        </TabPane>
+      </Tabs>
     </DefaultStyledContainer>
   )
 }

@@ -20,25 +20,6 @@ const GET_LESSON = gql`
     }
   }
 `
-const GET_DATA = gql`
-  query getData($id: ID!) {
-    lesson(id: $id) {
-      id
-      name
-      content
-      imageUrl
-      language
-      subject {
-        id
-        name
-      }
-    }
-    subjects {
-      id
-      name
-    }
-  }
-`
 
 const UPDATE_LESSON = gql`
   mutation deleteLesson($id: ID!, $input: LessonInput) {
@@ -56,11 +37,11 @@ const UPDATE_LESSON = gql`
   }
 `
 export default function Lesson(props) {
-  const { id } = props.match.params
+  const { lessonId: id } = props
 
   const [updateLesson] = useMutation(UPDATE_LESSON)
 
-  const { data, loading, error } = useQuery(GET_DATA, { variables: { id } })
+  const { data, loading, error } = useQuery(GET_LESSON, { variables: { id } })
 
   if (loading) return <div>loading</div>
   if (error) return <div>ERROR</div>
@@ -99,23 +80,6 @@ export default function Lesson(props) {
           label: 'russian'
         }
       ]
-    },
-    {
-      key: 'subject',
-      label: 'subject',
-      type: 'select',
-      value:
-        data && data.lesson && data.lesson.subject
-          ? data.lesson.subject.id
-          : '',
-      options:
-        data && data.subjects
-          ? data.subjects.map(subject => ({
-              label: subject.name,
-              value: subject.id
-            }))
-          : [],
-      isMultipleSelection: false
     }
   ]
 

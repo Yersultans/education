@@ -13,8 +13,8 @@ import User from './users/User'
 import Users from './users/Users'
 import Subject from './subjects/Subject'
 import Subjects from './subjects/Subjects'
-import Lesson from './lessons/Lesson'
-import Lessons from './lessons/Lessons'
+import Posts from './post/Posts'
+import Post from './post/Post'
 
 import withHelmet from '../hocs/withHelmet'
 import AuthContext from '../context/AuthContext'
@@ -108,8 +108,8 @@ function App() {
                     <Route exact path="/addQuestion" component={AddQuestion} />
                     <Route exact path="/subjects" component={Subjects} />
                     <Route exact path="/subjects/:id" component={Subject} />
-                    <Route exact path="/lessons" component={Lessons} />
-                    <Route exact path="/lessons/:id" component={Lesson} />
+                    <Route exact path="/posts" component={Posts} />
+                    <Route exact path="/posts/:id" component={Post} />
                   </>
                 )}
               {currentUser && currentUser.role === 'admin' && (

@@ -7,6 +7,7 @@ import subject from './subject'
 import lesson from './lesson'
 import form from './form'
 import formMessage from './formMessage'
+import post from './post'
 
 import gqlLoader from './gqlLoader'
 
@@ -23,7 +24,8 @@ const gqlServerConfig = {
     subject.typeDefs,
     lesson.typeDefs,
     form.typeDefs,
-    formMessage.typeDefs
+    formMessage.typeDefs,
+    post.typeDefs
   ].join(' '),
   resolvers: merge(
     {},
@@ -33,7 +35,8 @@ const gqlServerConfig = {
     subject.resolvers,
     lesson.resolvers,
     form.resolvers,
-    formMessage.resolvers
+    formMessage.resolvers,
+    post.resolvers
   ),
   context: ({ req }) => {
     return {
@@ -45,7 +48,8 @@ const gqlServerConfig = {
         Subject: subject.model,
         Lesson: lesson.model,
         Form: form.model,
-        FormMessage: formMessage.model
+        FormMessage: formMessage.model,
+        Post: post.model
       }
     }
   }

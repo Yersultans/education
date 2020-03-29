@@ -1,44 +1,22 @@
 import React, { useState, useCallback } from 'react'
 import { useQuery, useMutation, gql } from '@apollo/client'
 import { Link } from 'react-router-dom'
-import { Table, Button, Divider } from 'antd'
+import { Table, Button, Divider, Modal } from 'antd'
 
 import CreateForm from '../../components/CreateForm'
 import DefaultStyledContainer from '../../components/DefaultStyledContainer'
 import showConfirm from '../../components/DeleteFromTableFunc'
+import Lesson from './Lesson'
 
 const GET_LESSONS = gql`
-  query getLessons {
-    lessons {
+  query getLessons($id: ID!) {
+    subject(id: $id) {
       id
-      name
-      content
-      imageUrl
-      language
-      subject {
+      lessons {
         id
         name
+        language
       }
-    }
-  }
-`
-
-const GET_DATA = gql`
-  query getData {
-    lessons {
-      id
-      name
-      content
-      imageUrl
-      language
-      subject {
-        id
-        name
-      }
-    }
-    subjects {
-      id
-      name
     }
   }
 `
@@ -53,37 +31,78 @@ const ADD_LESSON = gql`
     addLesson(input: $input) {
       id
       name
-      content
-      imageUrl
-      language
-      subject {
+    }
+  }
+`
+const UPDATE_SUBJECT = gql`
+  mutation updateSubject($id: ID!, $input: SubjectInput) {
+    updateSubject(id: $id, input: $input) {
+      id
+      lessons {
         id
         name
       }
     }
   }
 `
-export default function Lessons() {
+const UPDATE_LESSON = gql`
+  mutation updateLesson($id: ID!, $input: LessonInput) {
+    updateLesson(id: $id, input: $input) {
+      id
+      name
+    }
+  }
+`
+export default function Lessons(props) {
+  const { subjectId } = props
   const [modalVisible, setModalVisible] = useState(false)
   const [formRef, setFormRef] = useState(null)
+  const [editingLesson, setEditingLesson] = useState(null)
+  const [editModalVisible, setEditModalVisible] = useState(false)
+  const [updateSubject] = useMutation(UPDATE_SUBJECT)
+  const [updateLesson] = useMutation(UPDATE_LESSON)
 
   const [addLesson] = useMutation(ADD_LESSON, {
     update(cache, { data: { addLesson: lesson } }) {
-      const { lessons } = cache.readQuery({ query: GET_LESSONS })
+      let { subject } = cache.readQuery({
+        query: GET_LESSONS,
+        variables: { id: subjectId }
+      })
+      subject = { id: subject.id, lessons: subject.lessons.concat([lesson]) }
+      const lessons =
+        subject && subject.lessons
+          ? subject.lessons.map(dataLesson => dataLesson.id)
+          : []
+      updateSubject({ variables: { id: subjectId, input: { lessons } } })
       cache.writeQuery({
         query: GET_LESSONS,
-        data: { lessons: lessons.concat([lesson]) }
+        variables: { id: subjectId },
+        data: { subject }
       })
     }
   })
 
   const [deleteLesson] = useMutation(DELETE_LESSON, {
     update(cache, { data: { deleteLesson: id } }) {
-      const { lessons } = cache.readQuery({ query: GET_LESSONS })
+      let { subject } = cache.readQuery({
+        query: GET_LESSONS,
+        variables: { id: subjectId }
+      })
+      subject = {
+        id: subject.id,
+        lessons: subject.lessons.filter(nLesson => nLesson.id !== id)
+      }
+      const lessons =
+        subject && subject.lessons
+          ? subject.lessons.map(dataLesson => dataLesson.id)
+          : []
+
+      updateSubject({ variables: { id: subjectId, input: { lessons } } })
       cache.writeQuery({
         query: GET_LESSONS,
+        variables: { id: subjectId },
         data: {
-          lessons: lessons.filter(lesson => lesson.id !== id)
+          subject
         }
       })
     }
@@ -95,7 +114,14 @@ export default function Lessons() {
     }
   }, [])
 
-  const { data, loading, error } = useQuery(GET_DATA)
+  const handleLessonEdit = (state, editLesson) => {
+    setEditModalVisible(state)
+    setEditingLesson(editLesson)
+  }
+
+  const { data, loading, error } = useQuery(GET_LESSONS, {
+    variables: { id: subjectId }
+  })
 
   const columns = [
     {
@@ -114,9 +140,7 @@ export default function Lessons() {
       width: 200,
       render: (text, item) => (
         <span>
-          <Link to={`/lessons/${item.id}`}>
-            <Button> Edit </Button>
-          </Link>
+          <Button onClick={() => handleLessonEdit(true, item)}> Edit </Button>
           <Divider type="vertical" />
           <Button
             type="danger"
@@ -132,6 +156,11 @@ export default function Lessons() {
       )
     }
   ]
+
+  const handleUpdateClick = async () => {
+    const { id } = editingLesson
+    updateLesson({ variables: { id, input: editingLesson } })
+  }
 
   const handleFields = () => {
     const fields = [
@@ -157,19 +186,6 @@ export default function Lessons() {
             label: 'russian'
           }
         ]
-      },
-      {
-        key: 'subject',
-        label: 'subject',
-        type: 'select',
-        options:
-          data && data.subjects
-            ? data.subjects.map(subject => ({
-                label: subject.name,
-                value: subject.id
-              }))
-            : '',
-        isMultipleSelection: false
       }
     ]
     return fields
@@ -207,8 +223,8 @@ export default function Lessons() {
     <DefaultStyledContainer>
       <Table
         dataSource={
-          data && data.lessons
-            ? data.lessons.map(lesson => {
+          data && data.subject && data.subject.lessons
+            ? data.subject.lessons.map(lesson => {
                 return { ...lesson, key: lesson.id }
               })
             : []
@@ -229,6 +245,16 @@ export default function Lessons() {
         onCreate={handleCreate}
         fields={handleFields()}
       />
+      {editingLesson && (
+        <Modal
+          visible={editModalVisible}
+          onCancel={() => handleLessonEdit(false, null)}
+          onOk={handleUpdateClick}
+          footer={null}
+        >
+          <Lesson lessonId={editingLesson.id} />
+        </Modal>
+      )}
     </DefaultStyledContainer>
   )
 }

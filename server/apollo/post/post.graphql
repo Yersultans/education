@@ -1,0 +1,25 @@
+type Post {
+  id: ID!
+  name: String
+  imageUrl: String
+  content: String
+  user: User
+}
+
+input PostInput {
+  name: String
+  imageUrl: String
+  content: String
+  user: ID
+}
+
+extend type Query {
+  posts: [Post]!
+  post(id: ID!): Post!
+}
+
+extend type Mutation {
+  addPost(input: PostInput): Post!
+  updatePost(id: ID!, input: PostInput): Post!
+  deletePost(id: ID!): ID!
+}

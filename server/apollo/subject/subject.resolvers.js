@@ -46,6 +46,10 @@ module.exports = {
     async language(Subject, _, ctx) {
       const item = await ctx.models.Subject.findById(Subject._id, 'language')
       return item.language
+    },
+    async lessons(Subject, _, ctx) {
+      const item = await ctx.models.Subject.findById(Subject._id, 'lessons')
+      return item.lessons
     }
   }
 }

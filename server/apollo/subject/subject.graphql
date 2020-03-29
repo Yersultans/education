@@ -3,12 +3,14 @@ type Subject {
   name: String
   imageUrl: String
   language: String
+  lessons: [Lesson]
 }
 
 input SubjectInput {
   name: String
   imageUrl: String
   language: String
+  lessons: [ID]
 }
 
 extend type Query {

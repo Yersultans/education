@@ -9,7 +9,8 @@ const Subject = new Schema({
     type: String,
     enum: ['kazakh', 'russian'],
     default: 'kazakh'
-  }
+  },
+  lessons: [{ type: Schema.Types.ObjectId, ref: 'Lesson' }]
 })
 
 export default mongoose.model('Subject', Subject)
