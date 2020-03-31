@@ -6,6 +6,9 @@ type Question {
   options: [String]
   correctAnswers: [String]
   isMultipleAnswers: Boolean
+  language: String
+  subject: Subject
+  lesson: Lesson
 }
 
 input QuestionInput {
@@ -15,6 +18,9 @@ input QuestionInput {
   options: [String]
   correctAnswers: [String]
   isMultipleAnswers: Boolean
+  language: String
+  subject: ID
+  lesson: ID
 }
 
 extend type Query {

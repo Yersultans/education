@@ -7,13 +7,13 @@ const adminMenu = [
   { link: '/users', name: 'Users', icon: 'user' },
   { link: '/questions', name: 'Questions', icon: 'question-circle' },
   { link: '/subjects', name: 'Subjects', icon: 'cluster' },
-  { link: '/lessons', name: 'Lessons', icon: 'book' }
+  { link: '/posts', name: 'Posts', icon: 'book' }
 ]
 
 const contentManagerMenu = [
   { link: '/questions', name: 'Questions', icon: 'question-circle' },
   { link: '/subjects', name: 'Subjects', icon: 'cluster' },
-  { link: '/lessons', name: 'Lessons', icon: 'book' }
+  { link: '/posts', name: 'Posts', icon: 'book' }
 ]
 
 function Header(props) {

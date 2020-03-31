@@ -11,7 +11,14 @@ const QuestionSchema = new Schema({
     enum: ['MultipleChoice', 'OpenEnded']
   },
   correctAnswers: [String],
-  isMultipleAnswers: Boolean
+  isMultipleAnswers: Boolean,
+  language: {
+    type: String,
+    enum: ['kazakh', 'russian'],
+    default: 'kazakh'
+  },
+  subject: { type: Schema.Types.ObjectId, ref: 'Subject' },
+  lessons: { type: Schema.Types.ObjectId, ref: 'Lesson' }
 })
 
 export default mongoose.model('Question', QuestionSchema)

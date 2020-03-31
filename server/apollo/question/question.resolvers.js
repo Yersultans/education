@@ -62,6 +62,18 @@ module.exports = {
         'isMultipleAnswers'
       )
       return item.isMultipleAnswers
+    },
+    async language(Question, _, ctx) {
+      const item = await ctx.models.Question.findById(Question._id, 'language')
+      return item.language
+    },
+    async subject(Question, _, ctx) {
+      const item = await ctx.models.Question.findById(Question._id, 'subject')
+      return item.subject
+    },
+    async lesson(Question, _, ctx) {
+      const item = await ctx.models.Question.findById(Question._id, 'lesson')
+      return item.lesson
     }
   }
 }

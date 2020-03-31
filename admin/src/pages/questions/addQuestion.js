@@ -15,6 +15,20 @@ const GET_QUESTIONS = gql`
     }
   }
 `
+const GET_SUBJECTS = gql`
+  query subjects {
+    subjects {
+      id
+      name
+      language
+      lessons {
+        id
+        name
+        language
+      }
+    }
+  }
+`
 const ADD_QUESTION = gql`
   mutation addQuestion($input: QuestionInput) {
     addQuestion(input: $input) {
@@ -33,6 +47,8 @@ function AddQuestion({ form }) {
   const [answers, setAnswers] = useState([])
   const [isMultipleAnswers, setIsMultipleAnswers] = useState(false)
   const [optionsVisible, setOptionsVisible] = useState(false)
+  const [subjects, setSubjects] = useState(null)
+  const [lessons, setLessons] = useState(null)
   const [addQuestion] = useMutation(ADD_QUESTION, {
     update(cache, { data: { addQuestion: question } }) {
       const { questions } = cache.readQuery({ query: GET_QUESTIONS })
@@ -44,6 +60,15 @@ function AddQuestion({ form }) {
       })
     }
   })
+  const saveFormRef = useCallback(node => {
+    if (node !== null) {
+      setFormRef(node)
+    }
+  }, [])
+
+  const { data: dataSubjects, loading, error } = useQuery(GET_SUBJECTS)
+  if (loading) return <div> Loading </div>
+  if (error) return <div> Error </div>
 
   const remove = k => {
     const keys = form.getFieldValue('keys')
@@ -67,7 +92,7 @@ function AddQuestion({ form }) {
     e.preventDefault()
     form.validateFields((err, values) => {
       if (!err) {
-        const { text, type, level } = values
+        const { text, type, level, language, subject, lesson } = values
         let newValue = {}
         if (type === 'MultipleChoice') {
           const { options } = values
@@ -83,13 +108,19 @@ function AddQuestion({ form }) {
             level,
             type,
             correctAnswers: filterCorrectAnswers,
-            isMultipleAnswers
+            isMultipleAnswers,
+            language,
+            subject,
+            lesson
           }
         } else if (type === 'OpenEnded') {
           newValue = {
             text,
             level,
-            type
+            type,
+            language,
+            subject,
+            lesson
           }
         }
         addQuestion({
@@ -115,11 +146,18 @@ function AddQuestion({ form }) {
     else setOptionsVisible(false)
   }
 
-  const saveFormRef = useCallback(node => {
-    if (node !== null) {
-      setFormRef(node)
-    }
-  }, [])
+  const handleLanguage = e => {
+    const filterSubjects =
+      dataSubjects &&
+      dataSubjects.subjects &&
+      dataSubjects.subjects.filter(subject => subject.language === e)
+    setSubjects(filterSubjects)
+  }
+
+  const handleSubject = e => {
+    const filterLessons = subjects.find(subject => subject.id === e)
+    setLessons(filterLessons)
+  }
 
   const formItemLayout = {
     labelCol: {
@@ -227,6 +265,74 @@ function AddQuestion({ form }) {
             <Select.Option key={3} value={3}>
               Hard
             </Select.Option>
+          </Select>
+        )}
+      </Form.Item>
+      <Form.Item {...formItemLayoutWithOutLabel}>
+        {getFieldDecorator('language', {
+          rules: [
+            {
+              required: true
+            }
+          ]
+        })(
+          <Select
+            placeholder="Choose language of Question"
+            mode="single"
+            onChange={handleLanguage}
+            style={{ width: '60%', marginRight: 8 }}
+          >
+            <Select.Option key="kazakh" value="kazakh">
+              kazakh
+            </Select.Option>
+            <Select.Option key="russain" value="russain">
+              russian
+            </Select.Option>
+          </Select>
+        )}
+      </Form.Item>
+      <Form.Item {...formItemLayoutWithOutLabel}>
+        {getFieldDecorator('subject', {
+          rules: [
+            {
+              required: true
+            }
+          ]
+        })(
+          <Select
+            placeholder="Choose subject of Question"
+            mode="single"
+            onChange={handleSubject}
+            style={{ width: '60%', marginRight: 8 }}
+          >
+            {subjects &&
+              subjects.map(subject => (
+                <Select.Option key={subject.id} value={subject.id}>
+                  {subject.name}
+                </Select.Option>
+              ))}
+          </Select>
+        )}
+      </Form.Item>
+      <Form.Item {...formItemLayoutWithOutLabel}>
+        {getFieldDecorator('lesson', {
+          rules: [
+            {
+              required: true
+            }
+          ]
+        })(
+          <Select
+            placeholder="Choose lesson of Question"
+            mode="single"
+            style={{ width: '60%', marginRight: 8 }}
+          >
+            {lessons &&
+              lessons.map(lesson => (
+                <Select.Option key={lesson.id} value={lesson.id}>
+                  {lesson.name}
+                </Select.Option>
+              ))}
           </Select>
         )}
       </Form.Item>

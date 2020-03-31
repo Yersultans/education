@@ -1,38 +1,48 @@
-import React, {useState, useCallback } from 'react'
+import React, { useState, useCallback } from 'react'
 import { useQuery, useMutation, gql } from '@apollo/client'
 import { Button, Divider, Table } from 'antd'
 import { Link } from 'react-router-dom'
 import DefaultStyledContainer from '../../components/DefaultStyledContainer'
 import showConfirm from '../../components/DeleteFromTableFunc'
 
-
 const GET_DATA = gql`
-
-query Question{
-  questions{
-    id
-    text
-    correctAnswers
-    options
-    isMultipleAnswers
-
+  query Question {
+    questions {
+      id
+      text
+      correctAnswers
+      options
+      isMultipleAnswers
+      language
+      subject {
+        id
+      }
+      lesson {
+        id
+      }
+    }
   }
-}
- `
+`
 
 const GET_QUESTIONS = gql`
-query questions{
-  questions{
-    id
-    text
-    correctAnswers
-    options
-    isMultipleAnswers
-
+  query questions {
+    questions {
+      id
+      text
+      correctAnswers
+      options
+      isMultipleAnswers
+      language
+      subject {
+        id
+      }
+      lesson {
+        id
+      }
+    }
   }
-}
 `
-const DELETE_QUESTION =gql`
+const DELETE_QUESTION = gql`
   mutation deleteQuestion($id: ID!) {
     deleteQuestion(id: $id)
   }
@@ -41,8 +51,6 @@ const DELETE_QUESTION =gql`
 export default function Questions() {
   const { data, loading, error } = useQuery(GET_DATA)
 
- 
- 
   const [deleteQuestion] = useMutation(DELETE_QUESTION, {
     update(cache, { data: { deleteQuestion: id } }) {
       const { questions } = cache.readQuery({ query: GET_QUESTIONS })
@@ -54,7 +62,6 @@ export default function Questions() {
       })
     }
   })
- 
 
   const columns = [
     {
@@ -91,32 +98,30 @@ export default function Questions() {
       )
     }
   ]
- 
 
-   if (loading) return <div> Loading </div>
-   if (error) return <div> Error </div>
+  if (loading) return <div> Loading </div>
+  if (error) return <div> Error </div>
 
-     return (
-       <DefaultStyledContainer>
-         <Table
-           rowKey={row => row.id}
-           dataSource={
-             data && data.questions 
-               ? data.questions.map(question => {
-                   return { ...question, key: question.id }
-                 })
-               : []
-           }         
-            columns={columns}
-            title={() => (
-              <>
-                <Link to="/addQuestion">
-                  <Button>Add new NQuestion</Button>
-                </Link>
-              </>
-            )}
-          />
-       </DefaultStyledContainer>
-    )
-  }
-  
+  return (
+    <DefaultStyledContainer>
+      <Table
+        rowKey={row => row.id}
+        dataSource={
+          data && data.questions
+            ? data.questions.map(question => {
+                return { ...question, key: question.id }
+              })
+            : []
+        }
+        columns={columns}
+        title={() => (
+          <>
+            <Link to="/addQuestion">
+              <Button>Add new NQuestion</Button>
+            </Link>
+          </>
+        )}
+      />
+    </DefaultStyledContainer>
+  )
+}

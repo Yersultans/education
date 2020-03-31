@@ -12,6 +12,25 @@ const GET_DATA = gql`
       level
       options
       correctAnswers
+      language
+      subject {
+        id
+      }
+      lesson {
+        id
+      }
+    }
+  }
+`
+const GET_SUBJECTS = gql`
+  query subjects {
+    id
+    name
+    language
+    lessons {
+      id
+      name
+      language
     }
   }
 `
@@ -23,6 +42,9 @@ const UPDATE_QUESTION = gql`
       correctAnswers
       options
       isMultipleAnswers
+      language
+      subject
+      lesson
     }
   }
 `
@@ -38,6 +60,25 @@ function EditQuestion(props) {
   const [optionsVisible, setOptionsVisible] = useState(false)
   const [updateQuestion] = useMutation(UPDATE_QUESTION)
   const [options, setOptions] = useState([])
+
+  const { data: dataSubjects, loadingSubjects, errorSubjects } = useQuery(
+    GET_SUBJECTS
+  )
+
+  const [subjects, setSubjects] = useState(
+    dataSubjects && dataSubjects.subjects
+      ? dataSubjects.subjects.filter(
+          subject => subject.language === data.question.language
+        )
+      : null
+  )
+  const [lessons, setLessons] = useState(
+    dataSubjects && dataSubjects.subjects
+      ? dataSubjects.subjects.find(
+          subject => subject.id === data.question.subject.id
+        )
+      : null
+  )
 
   useEffect(() => {
     if (!loading && options !== data.question.options) {
@@ -101,6 +142,18 @@ function EditQuestion(props) {
     else setOptionsVisible(false)
   }
 
+  const handleLanguage = e => {
+    const filterSubjects = dataSubjects.filter(
+      subject => subject.language === e
+    )
+    setSubjects(filterSubjects)
+  }
+
+  const handleSubject = e => {
+    const filterLessons = subjects.find(subject => subject.id === e)
+    setLessons(filterLessons)
+  }
+
   const saveFormRef = useCallback(node => {
     if (node !== null) {
       setFormRef(node)
@@ -159,8 +212,8 @@ function EditQuestion(props) {
     </Form.Item>
   ))
 
-  if (loading) return <div> Loading </div>
-  if (error) return <div> Error </div>
+  if (loading || loadingSubjects) return <div> Loading </div>
+  if (error || errorSubjects) return <div> Error </div>
   return (
     <Form onSubmit={handleSubmit} ref={saveFormRef}>
       <Form.Item
@@ -199,6 +252,84 @@ function EditQuestion(props) {
             <Select.Option key={3} value={3}>
               Hard
             </Select.Option>
+          </Select>
+        )}
+      </Form.Item>
+
+      <Form.Item
+        key="Language"
+        label="Language"
+        {...formItemLayoutWithOutLabel}
+      >
+        {getFieldDecorator('language', {
+          initialValue: data && data.question && data.question.language,
+          rules: [
+            {
+              required: true,
+              message: `Please give a language to a Question`
+            }
+          ]
+        })(
+          <Select
+            placeholder="Please select a Language"
+            style={{ width: '100%' }}
+            onChange={handleLanguage}
+          >
+            <Select.Option key="kazakh" value="kazakh">
+              kazakh
+            </Select.Option>
+            <Select.Option key="rassian" value="rassian">
+              rassian
+            </Select.Option>
+          </Select>
+        )}
+      </Form.Item>
+
+      <Form.Item key="Subject" label="Subject" {...formItemLayoutWithOutLabel}>
+        {getFieldDecorator('subject', {
+          initialValue: data && data.question && data.question.subject.id,
+          rules: [
+            {
+              required: true,
+              message: `Please give a subject to a Question`
+            }
+          ]
+        })(
+          <Select
+            placeholder="Please select a Subject"
+            style={{ width: '100%' }}
+            onChange={handleSubject}
+          >
+            {subjects &&
+              subjects.map(subject => (
+                <Select.Option key={subject.id} value={subject.id}>
+                  {subject.name}
+                </Select.Option>
+              ))}
+          </Select>
+        )}
+      </Form.Item>
+
+      <Form.Item key="Lesson" label="Lesson" {...formItemLayoutWithOutLabel}>
+        {getFieldDecorator('lesson', {
+          initialValue: data && data.question && data.question.lesson.id,
+          rules: [
+            {
+              required: true,
+              message: `Please give a lesson to a Question`
+            }
+          ]
+        })(
+          <Select
+            placeholder="Please select a Lesson"
+            style={{ width: '100%' }}
+          >
+            {lessons &&
+              lessons.map(lesson => (
+                <Select.Option key={lesson.id} value={lesson.id}>
+                  {lesson.name}
+                </Select.Option>
+              ))}
           </Select>
         )}
       </Form.Item>
