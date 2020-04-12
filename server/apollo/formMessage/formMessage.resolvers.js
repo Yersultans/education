@@ -74,6 +74,20 @@ module.exports = {
         'updateAt'
       )
       return item.updateAt
+    },
+    async post(FormMessage, _, ctx) {
+      const item = await ctx.models.FormMessage.findById(
+        FormMessage._id,
+        'post'
+      )
+      return item.post
+    },
+    async form(FormMessage, _, ctx) {
+      const item = await ctx.models.FormMessage.findById(
+        FormMessage._id,
+        'form'
+      )
+      return item.form
     }
   }
 }

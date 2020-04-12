@@ -6,7 +6,9 @@ const FormMessage = new Schema(
   {
     user: { type: Schema.Types.ObjectId, ref: 'User' },
     messages: { type: Schema.Types.ObjectId, ref: 'FormMessage' },
-    content: String
+    content: String,
+    post: { type: Schema.Types.ObjectId, ref: 'Post' },
+    form: { type: Schema.Types.ObjectId, ref: 'Form' }
   },
   { timestamps: { createdAt: 'created_at', updateAt: 'update_at' } }
 )

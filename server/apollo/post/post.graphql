@@ -4,6 +4,8 @@ type Post {
   imageUrl: String
   content: String
   user: User
+  createdAt: String
+  updateAt: String
 }
 
 input PostInput {

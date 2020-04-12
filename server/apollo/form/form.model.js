@@ -5,8 +5,7 @@ const { Schema } = mongoose
 const Form = new Schema(
   {
     name: String,
-    description: String,
-    messages: { type: Schema.Types.ObjectId, ref: 'FormMessage' }
+    description: String
   },
   { timestamps: { createdAt: 'created_at', updateAt: 'update_at' } }
 )
