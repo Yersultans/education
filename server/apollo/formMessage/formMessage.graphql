@@ -5,12 +5,16 @@ type FormMessage {
   messages: [FormMessage]
   createdAt: String
   updateAt: String
+  post: Post
+  form: Form
 }
 
 input FormMessageInput {
   content: String
   user: ID
   messages: [ID]
+  form: ID
+  post: ID
 }
 
 extend type Query {
