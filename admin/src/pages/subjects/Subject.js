@@ -16,6 +16,9 @@ const GET_SUBJECT = gql`
       name
       imageUrl
       language
+      lessons {
+        id
+      }
     }
   }
 `
@@ -27,6 +30,9 @@ const UPDATE_SUBJECT = gql`
       name
       imageUrl
       language
+      lessons {
+        id
+      }
     }
   }
 `

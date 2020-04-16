@@ -25,7 +25,7 @@ module.exports = {
       return post
     },
     async deletePost(_, { id }, ctx) {
-      await ctx.models.post.findByIdAndRemove(id).exec()
+      await ctx.models.Post.findByIdAndRemove(id).exec()
       return id
     }
   },
