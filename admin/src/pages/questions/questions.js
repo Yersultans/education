@@ -12,7 +12,6 @@ const GET_DATA = gql`
       text
       correctAnswers
       options
-      isMultipleAnswers
       language
       subject {
         id
@@ -31,7 +30,6 @@ const GET_QUESTIONS = gql`
       text
       correctAnswers
       options
-      isMultipleAnswers
       language
       subject {
         id

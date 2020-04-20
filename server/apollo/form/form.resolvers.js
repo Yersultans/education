@@ -41,6 +41,10 @@ module.exports = {
       const item = await ctx.models.Form.findById(Form._id, 'description')
       return item.description
     },
+    async user(Form, _, ctx) {
+      const item = await ctx.models.Form.findById(Form._id, 'user')
+      return item.user
+    },
     async messages(Form, _, ctx) {
       const item = await ctx.models.Form.findById(Form._id, 'messages')
       return item.messages

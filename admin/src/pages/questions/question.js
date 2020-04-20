@@ -41,7 +41,6 @@ const UPDATE_QUESTION = gql`
       level
       correctAnswers
       options
-      isMultipleAnswers
       language
       subject
       lesson
@@ -56,8 +55,6 @@ function EditQuestion(props) {
   const [formRef, setFormRef] = useState(null)
   const { getFieldDecorator, getFieldValue } = props.form
   const [answers, setAnswers] = useState([])
-  const [isMultipleAnswers, setIsMultipleAnswers] = useState(false)
-  const [optionsVisible, setOptionsVisible] = useState(false)
   const [updateQuestion] = useMutation(UPDATE_QUESTION)
   const [options, setOptions] = useState([])
 
@@ -114,7 +111,7 @@ function EditQuestion(props) {
     props.form.validateFields((err, values) => {
       if (!err) {
         console.log('values: ', values)
-        const { text, type, level } = values
+        const { text, level } = values
         let newValue = {}
 
         const { options, keys } = values
@@ -123,9 +120,7 @@ function EditQuestion(props) {
           options,
           text,
           level,
-          type,
-          correctAnswers,
-          isMultipleAnswers
+          correctAnswers
         }
 
         updateQuestion({ variables: { id, input: newValue } })
@@ -137,15 +132,11 @@ function EditQuestion(props) {
     setAnswers(e, data.question.correctAnswers)
   }
 
-  const handleQuestionType = e => {
-    if (e === 'MultipleChoice') setOptionsVisible(true)
-    else setOptionsVisible(false)
-  }
-
   const handleLanguage = e => {
-    const filterSubjects = dataSubjects.filter(
-      subject => subject.language === e
-    )
+    const filterSubjects =
+      dataSubjects &&
+      dataSubjects.subjects &&
+      dataSubjects.subjects.filter(subject => subject.language === e)
     setSubjects(filterSubjects)
   }
 
@@ -333,30 +324,23 @@ function EditQuestion(props) {
           </Select>
         )}
       </Form.Item>
-
-      {options.length > 1 ? (
-        <>
-          <Checkbox.Group
-            defaultValue={loading ? [] : data.question.correctAnswers}
-            onChange={onChange}
-            style={{ display: optionsVisible ? 'block' : 'block' }}
+      <>
+        <Checkbox.Group
+          defaultValue={loading ? [] : data.question.correctAnswers}
+          onChange={onChange}
+        >
+          {formItems}
+        </Checkbox.Group>
+        <Form.Item {...formItemLayoutWithOutLabel}>
+          <Button
+            type="dashed"
+            onClick={add}
+            style={{ width: '60%', marginRight: 8 }}
           >
-            {formItems}
-          </Checkbox.Group>
-          <Form.Item
-            {...formItemLayoutWithOutLabel}
-            style={{ display: optionsVisible ? 'block' : 'block' }}
-          >
-            <Button
-              type="dashed"
-              onClick={add}
-              style={{ width: '60%', marginRight: 8 }}
-            >
-              <Icon type="plus" /> Add field
-            </Button>
-          </Form.Item>
-        </>
-      ) : null}
+            <Icon type="plus" /> Add field
+          </Button>
+        </Form.Item>
+      </>
 
       <Form.Item {...formItemLayoutWithOutLabel}>
         <Button type="primary" htmlType="submit">

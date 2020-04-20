@@ -4,6 +4,7 @@ type Post {
   imageUrl: String
   content: String
   user: User
+  messages: [FormMessage]
   createdAt: String
   updateAt: String
 }
@@ -13,6 +14,7 @@ input PostInput {
   imageUrl: String
   content: String
   user: ID
+  messages: [ID]
 }
 
 extend type Query {

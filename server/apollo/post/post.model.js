@@ -7,7 +7,8 @@ const PostSchema = new Schema(
     name: String,
     imageUrl: String,
     content: String,
-    user: { type: Schema.Types.ObjectId, ref: 'User' }
+    user: { type: Schema.Types.ObjectId, ref: 'User' },
+    messages: [{ type: Schema.Types.ObjectId, ref: 'FromMessage' }]
   },
   { timestamps: { createdAt: 'created_at', updateAt: 'update_at' } }
 )

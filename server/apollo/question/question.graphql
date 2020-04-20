@@ -1,11 +1,9 @@
 type Question {
   id: ID!
-  type: String
   level: Int
   text: String
   options: [String]
   correctAnswers: [String]
-  isMultipleAnswers: Boolean
   language: String
   subject: Subject
   lesson: Lesson
@@ -14,10 +12,8 @@ type Question {
 input QuestionInput {
   text: String
   level: Int
-  type: String
   options: [String]
   correctAnswers: [String]
-  isMultipleAnswers: Boolean
   language: String
   subject: ID
   lesson: ID

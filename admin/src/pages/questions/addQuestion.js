@@ -16,7 +16,7 @@ const GET_QUESTIONS = gql`
   }
 `
 const GET_SUBJECTS = gql`
-  query subjects {
+  query getSubjects {
     subjects {
       id
       name
@@ -44,9 +44,8 @@ let id = 0
 function AddQuestion({ form }) {
   const [formRef, setFormRef] = useState(null)
   const { getFieldDecorator, getFieldValue } = form
+  const [text, setText] = useState('')
   const [answers, setAnswers] = useState([])
-  const [isMultipleAnswers, setIsMultipleAnswers] = useState(false)
-  const [optionsVisible, setOptionsVisible] = useState(false)
   const [subjects, setSubjects] = useState(null)
   const [lessons, setLessons] = useState(null)
   const [addQuestion] = useMutation(ADD_QUESTION, {
@@ -92,44 +91,30 @@ function AddQuestion({ form }) {
     e.preventDefault()
     form.validateFields((err, values) => {
       if (!err) {
-        const { text, type, level, language, subject, lesson } = values
+        const { level, language, subject, lesson } = values
         let newValue = {}
-        if (type === 'MultipleChoice') {
-          const { options } = values
-          const correctAnswers = answers.map(n => options[n])
-          const filterCorrectAnswers = correctAnswers.filter(
-            option => option != null
-          )
+        const { options } = values
+        const correctAnswers = answers.map(n => options[n])
+        const filterCorrectAnswers = correctAnswers.filter(
+          option => option != null
+        )
 
-          const filterOption = options.filter(option => option != null)
-          newValue = {
-            options: filterOption,
-            text,
-            level,
-            type,
-            correctAnswers: filterCorrectAnswers,
-            isMultipleAnswers,
-            language,
-            subject,
-            lesson
-          }
-        } else if (type === 'OpenEnded') {
-          newValue = {
-            text,
-            level,
-            type,
-            language,
-            subject,
-            lesson
-          }
+        const filterOption = options.filter(option => option != null)
+        newValue = {
+          options: filterOption,
+          text,
+          level,
+          correctAnswers: filterCorrectAnswers,
+          language,
+          subject,
+          lesson
         }
         addQuestion({
           variables: {
             input: newValue
           }
         })
-        console.log('newValue', newValue)
-
+        setText('')
         form.resetFields()
       }
     })
@@ -137,26 +122,17 @@ function AddQuestion({ form }) {
   const onChange = e => {
     setAnswers(e)
   }
-  const onChangeMultiple = e => {
-    setIsMultipleAnswers(e)
-  }
-
-  const handleQuestionType = e => {
-    if (e === 'MultipleChoice') setOptionsVisible(true)
-    else setOptionsVisible(false)
-  }
 
   const handleLanguage = e => {
-    const filterSubjects =
-      dataSubjects &&
-      dataSubjects.subjects &&
-      dataSubjects.subjects.filter(subject => subject.language === e)
+    const language = e
+    const nSubjects = dataSubjects && dataSubjects.subjects
+    const filterSubjects = nSubjects.filter(sub => language === sub.language)
     setSubjects(filterSubjects)
   }
 
   const handleSubject = e => {
     const filterLessons = subjects.find(subject => subject.id === e)
-    setLessons(filterLessons)
+    setLessons(filterLessons.lessons)
   }
 
   const formItemLayout = {
@@ -194,7 +170,7 @@ function AddQuestion({ form }) {
           }
         ]
       })(
-        <Input placeholder="options" style={{ width: '60%', marginRight: 8 }} />
+        <Input placeholder="options" style={{ width: '80%', marginRight: 8 }} />
       )}
       {keys.length > 1 ? (
         <>
@@ -218,28 +194,14 @@ function AddQuestion({ form }) {
         {getFieldDecorator('text', {
           rules: [
             {
-              required: true,
               message: `Please give a text to a Question`
             }
           ]
-        })(<Input style={{ width: '60%', marginRight: 8 }} />)}
-      </Form.Item>
-      <Form.Item
-        key="Multiple Answers"
-        label="Multiple Answers"
-        {...formItemLayoutWithOutLabel}
-      >
-        {getFieldDecorator('isMultipleAnswers', {
-          rules: [
-            {
-              required: false
-            }
-          ]
         })(
-          <Switch
-            checkedChildren={<Icon type="check" />}
-            unCheckedChildren={<Icon type="close" />}
-            onChange={onChangeMultiple}
+          <TextEditor
+            style={{ width: '60%', marginRight: 8 }}
+            initialValue={text}
+            onTextChange={e => setText(e)}
           />
         )}
       </Form.Item>
@@ -285,7 +247,7 @@ function AddQuestion({ form }) {
             <Select.Option key="kazakh" value="kazakh">
               kazakh
             </Select.Option>
-            <Select.Option key="russain" value="russain">
+            <Select.Option key="russian" value="russian">
               russian
             </Select.Option>
           </Select>
@@ -336,40 +298,8 @@ function AddQuestion({ form }) {
           </Select>
         )}
       </Form.Item>
+      <Checkbox.Group onChange={onChange}>{formItems}</Checkbox.Group>
       <Form.Item {...formItemLayoutWithOutLabel}>
-        {getFieldDecorator('type', {
-          rules: [
-            {
-              required: true
-            }
-          ]
-        })(
-          <Select
-            placeholder="Choose type of Question"
-            mode="single"
-            onChange={handleQuestionType}
-            style={{ width: '60%', marginRight: 8 }}
-          >
-            <Select.Option key="MultipleChoice" value="MultipleChoice">
-              MultipleChoice
-            </Select.Option>
-            <Select.Option key="OpenEnded" value="OpenEnded">
-              OpenEnded
-            </Select.Option>
-          </Select>
-        )}
-      </Form.Item>
-
-      <Checkbox.Group
-        onChange={onChange}
-        style={{ display: optionsVisible ? 'block' : 'none' }}
-      >
-        {formItems}
-      </Checkbox.Group>
-      <Form.Item
-        {...formItemLayoutWithOutLabel}
-        style={{ display: optionsVisible ? 'block' : 'none' }}
-      >
         <Button
           type="dashed"
           onClick={add}
