@@ -9,7 +9,6 @@ type Form {
 }
 
 input FormInput {
-  id: ID!
   name: String
   description: String
   user: ID

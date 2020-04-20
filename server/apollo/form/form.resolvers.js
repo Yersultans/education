@@ -1,8 +1,8 @@
 module.exports = {
   Query: {
     async forms(_, args, ctx) {
-      const froms = await ctx.models.Form.find({}, 'id')
-      return froms
+      const forms = await ctx.models.Form.find({}, 'id')
+      return forms
     },
     async form(_, args, ctx) {
       const form = await ctx.models.Form.findById(args.id, 'id').exec()
