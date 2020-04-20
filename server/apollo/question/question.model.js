@@ -13,7 +13,7 @@ const QuestionSchema = new Schema({
     default: 'kazakh'
   },
   subject: { type: Schema.Types.ObjectId, ref: 'Subject' },
-  lessons: { type: Schema.Types.ObjectId, ref: 'Lesson' }
+  lesson: { type: Schema.Types.ObjectId, ref: 'Lesson' }
 })
 
 export default mongoose.model('Question', QuestionSchema)
