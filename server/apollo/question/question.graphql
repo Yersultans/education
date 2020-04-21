@@ -19,9 +19,15 @@ input QuestionInput {
   lesson: ID
 }
 
+input QuestionFilterInput {
+  subject: ID
+  lesson: ID
+}
+
 extend type Query {
   questions: [Question]!
   question(id: ID!): Question!
+  quizby(input: QuestionFilterInput): [Question]!
 }
 extend type Mutation {
   addQuestion(input: QuestionInput): Question!

@@ -50,8 +50,8 @@ module.exports = {
       return item.messages
     },
     async createdAt(Form, _, ctx) {
-      const item = await ctx.models.Form.findById(Form._id, 'createdAt')
-      return item.createdAt
+      const item = await ctx.models.Form.findById(Form._id, 'created_at')
+      return item.created_at
     },
     async updateAt(Form, _, ctx) {
       const item = await ctx.models.Form.findById(Form._id, 'updateAt')

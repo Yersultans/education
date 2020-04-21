@@ -10,6 +10,10 @@ module.exports = {
         throw new Error('Question does not exist')
       }
       return question
+    },
+    async quizby(_, { input }, ctx) {
+      const questions = await ctx.models.Question.find({ ...input })
+      return questions
     }
   },
   Mutation: {
