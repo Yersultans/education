@@ -23,6 +23,5 @@ extend type Query {
 }
 
 extend type Mutation {
-  addProgresses(input: [ProgressInput]): History
   addProgress(input: ProgressInput): Progress
 }

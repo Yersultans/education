@@ -16,5 +16,5 @@ extend type Query {
 }
 
 extend type Mutation {
-  addHistory(input: HistoryInput): History!
+  addHistory(input: [ProgressInput]): History!
 }

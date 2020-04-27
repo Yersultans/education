@@ -13,17 +13,6 @@ module.exports = {
     }
   },
   Mutation: {
-    async addProgresses(_, { input }, ctx) {
-      const progresses = input
-      const questions = progresses.map(async progress => {
-        const question = new ctx.models.Progress(progress)
-        await question.save()
-        return question._id
-      })
-      const history = new ctx.models.History({ user: input[0].user, questions })
-      await history.save()
-      return history
-    },
     async addProgress(_, { input }, ctx) {
       const progress = new ctx.models.Progress(input)
       await progress.save()
