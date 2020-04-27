@@ -11,15 +11,6 @@ input HistoryInput {
   questions: [ID]
 }
 
-input ProgressInput {
-  user: ID
-  userAnswers: [String]
-  isCorrect: Boolean
-  question: ID
-  subject: ID
-  lesson: ID
-}
-
 extend type Query {
   histories: [History]
   history(id: ID!): History!
