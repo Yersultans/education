@@ -1,0 +1,28 @@
+type Progress {
+  id: ID!
+  user: User
+  userAnswers: [String]
+  isCorrect: Boolean
+  question: Question
+  subject: Subject
+  lesson: Lesson
+}
+
+input ProgressInput {
+  user: ID
+  userAnswers: [String]
+  isCorrect: Boolean
+  question: ID
+  subject: ID
+  lesson: ID
+}
+
+extend type Query {
+  progresses: [Progress]!
+  progress(id: ID!): Progress
+}
+
+extend type Mutation {
+  addProgesses(input: [ProgressInput]): History
+  addProgress(input: ProgressInput): Progress
+}

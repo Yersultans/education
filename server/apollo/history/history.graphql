@@ -1,0 +1,20 @@
+type History {
+  id: ID!
+  user: User
+  questions: [Progress]
+  createdAt: String
+  updateAt: String
+}
+
+input HistoryInput {
+  user: ID
+  questions: [ID]
+}
+extend type Query {
+  histories: [History]
+  history(id: ID!): History!
+}
+
+extend type Mutation {
+  addHistory(input: HistoryInput): History!
+}
