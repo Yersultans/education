@@ -13,7 +13,7 @@ module.exports = {
     }
   },
   Mutation: {
-    async addProgesses(_, { input }, ctx) {
+    async addProgresses(_, { input }, ctx) {
       const progresses = input
       const questions = progresses.map(async progress => {
         const question = new ctx.models.Progress(progress)
