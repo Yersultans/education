@@ -38,6 +38,17 @@ module.exports = {
     async lesson(Progress, _, ctx) {
       const item = await ctx.models.Progress.findById(Progress._id, 'lesson')
       return item.lesson
+    },
+    async userAnswers(Progress, _, ctx) {
+      const item = await ctx.models.Progress.findById(
+        Progress._id,
+        'userAnswers'
+      )
+      return item.userAnswers
+    },
+    async isCorrect(Progress, _, ctx) {
+      const item = await ctx.models.Progress.findById(Progress._id, 'isCorrect')
+      return item.isCorrect
     }
   }
 }

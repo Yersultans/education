@@ -17,13 +17,16 @@ module.exports = {
   },
   Mutation: {
     async addHistory(_, { input }, ctx) {
-      const progresses = input
-      const questions = progresses.map(async progress => {
-        const question = await ctx.models.Progress.create(progress)
-        return question._id
+      const questions = await Promise.all(
+        input.map(async progress => {
+          const question = await ctx.models.Progress.create(progress)
+          return question._id
+        })
+      )
+      const history = await ctx.models.History.create({
+        user: input[0].user,
+        questions
       })
-      const history = new ctx.models.History({ user: input[0].user, questions })
-      await history.save()
       return history
     }
   },
