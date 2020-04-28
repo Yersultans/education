@@ -25,7 +25,7 @@ module.exports = {
         })
       )
       const history = await ctx.models.History.create({
-        user: input[0].user,
+        user: answers[0].user,
         questions,
         total,
         correctAnswers
