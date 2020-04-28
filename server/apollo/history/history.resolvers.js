@@ -17,7 +17,7 @@ module.exports = {
   },
   Mutation: {
     async addHistory(_, { input }, ctx) {
-      const { answers, total, correctAnsers } = input
+      const { answers, total, correctAnswers } = input
       const questions = await Promise.all(
         answers.map(async progress => {
           const question = await ctx.models.Progress.create(progress)
@@ -28,7 +28,7 @@ module.exports = {
         user: input[0].user,
         questions,
         total,
-        correctAnsers
+        correctAnswers
       })
       return history
     },
