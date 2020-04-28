@@ -15,12 +15,18 @@ input HistoryInput {
   total: Int
 }
 
+input HisrotyFilterInput {
+  answers: [ProgressInput]
+  total: Int
+  correctAnswers: Int
+}
+
 extend type Query {
   histories: [History]
   history(id: ID!): History!
 }
 
 extend type Mutation {
-  addHistory(input: [ProgressInput]): History!
+  addHistory(input: HisrotyFilterInput): History!
   deleteHistory(id: ID!): ID!
 }
