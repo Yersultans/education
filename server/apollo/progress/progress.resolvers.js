@@ -35,6 +35,10 @@ module.exports = {
       const progress = new ctx.models.Progress(input)
       await progress.save()
       return progress
+    },
+    async deleteProgress(_, { id }, ctx) {
+      await ctx.models.Progress.findByIdAndRemove(id).exec()
+      return id
     }
   },
   Progress: {

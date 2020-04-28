@@ -30,4 +30,5 @@ extend type Query {
 
 extend type Mutation {
   addProgress(input: ProgressInput): Progress
+  deleteProgress(id: ID!): ID!
 }
