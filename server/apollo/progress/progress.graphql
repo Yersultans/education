@@ -17,9 +17,15 @@ input ProgressInput {
   lesson: ID
 }
 
+type Result {
+  total: Int
+  correct: Int
+  wrong: Int
+}
 extend type Query {
   progresses: [Progress]!
   progress(id: ID!): Progress
+  progressByUser(id: ID!): Result
 }
 
 extend type Mutation {

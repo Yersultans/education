@@ -12,6 +12,7 @@ const User = new Schema(
     lastName: String,
     parentEmail: String,
     birthDate: String,
+    imageUrl: String,
     role: {
       type: String,
       enum: [

@@ -2,6 +2,8 @@ type History {
   id: ID!
   user: User
   questions: [Progress]
+  correctAnswers: Int
+  total: Int
   createdAt: String
   updateAt: String
 }
@@ -9,6 +11,8 @@ type History {
 input HistoryInput {
   user: ID
   questions: [ID]
+  correctAnswers: Int
+  total: Int
 }
 
 extend type Query {
@@ -18,4 +22,5 @@ extend type Query {
 
 extend type Mutation {
   addHistory(input: [ProgressInput]): History!
+  deleteHistory(id: ID!): ID!
 }

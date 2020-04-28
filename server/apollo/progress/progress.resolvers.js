@@ -10,6 +10,24 @@ module.exports = {
         throw new Error('Progress does not exist')
       }
       return progress
+    },
+    async progressByUser(_, args, ctx) {
+      const correct = await ctx.models.Progress.find(
+        {
+          user: args.id,
+          isCorrect: true
+        },
+        'id'
+      )
+      const wrong = await ctx.models.Progress.find(
+        {
+          user: args.id,
+          isCorrect: false
+        },
+        'id'
+      )
+      const total = correct.length + wrong.length
+      return { total, correct: correct.length, wrong: wrong.length }
     }
   },
   Mutation: {

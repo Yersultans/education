@@ -28,6 +28,10 @@ module.exports = {
         questions
       })
       return history
+    },
+    async deleteHistory(_, { id }, ctx) {
+      await ctx.models.History.findByIdAndRemove(id).exec()
+      return id
     }
   },
   History: {
@@ -41,6 +45,17 @@ module.exports = {
     async questions(History, _, ctx) {
       const item = await ctx.models.History.findById(History._id, 'questions')
       return item.questions
+    },
+    async correctAnswers(History, _, ctx) {
+      const item = await ctx.models.History.findById(
+        History._id,
+        'correctAnswers'
+      )
+      return item.correctAnswers
+    },
+    async total(History, _, ctx) {
+      const item = await ctx.models.History.findById(History._id, 'total')
+      return item.total
     },
     async createdAt(History, _, ctx) {
       const item = await ctx.models.History.findById(History._id, 'created_at')

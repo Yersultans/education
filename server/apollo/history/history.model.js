@@ -5,7 +5,9 @@ const { Schema } = mongoose
 const History = new Schema(
   {
     user: { type: Schema.Types.ObjectId, ref: 'User' },
-    questions: [{ type: Schema.Types.ObjectId, ref: 'Progress' }]
+    questions: [{ type: Schema.Types.ObjectId, ref: 'Progress' }],
+    correctAnswers: Number,
+    total: Number
   },
   { timestamps: { createdAt: 'created_at', updateAt: 'update_at' } }
 )

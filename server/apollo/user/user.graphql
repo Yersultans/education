@@ -8,6 +8,7 @@ type User {
   parentEmail: String
   birthDate: String
   role: String
+  imageUrl: String
 }
 
 input UserInput {
@@ -18,6 +19,7 @@ input UserInput {
   parentEmail: String
   birthDate: String
   role: String
+  imageUrl: String
 }
 
 extend type Query {

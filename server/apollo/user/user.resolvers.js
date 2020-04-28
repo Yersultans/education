@@ -82,6 +82,10 @@ module.exports = {
     async role(user, _, ctx) {
       const item = await ctx.models.User.findById(user._id, 'role')
       return item.role
+    },
+    async imageUrl(user, _, ctx) {
+      const item = await ctx.models.User.findById(user._id, 'imageUrl')
+      return item.imageUrl
     }
   }
 }
