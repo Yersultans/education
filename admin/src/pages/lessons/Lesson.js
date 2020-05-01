@@ -13,6 +13,7 @@ const GET_LESSON = gql`
       content
       imageUrl
       language
+      videoUrl
       subject {
         id
         name
@@ -22,13 +23,14 @@ const GET_LESSON = gql`
 `
 
 const UPDATE_LESSON = gql`
-  mutation deleteLesson($id: ID!, $input: LessonInput) {
+  mutation updateLesson($id: ID!, $input: LessonInput) {
     updateLesson(id: $id, input: $input) {
       id
       name
       content
       imageUrl
       language
+      videoUrl
       subject {
         id
         name
@@ -63,6 +65,12 @@ export default function Lesson(props) {
       key: 'imageUrl',
       label: 'Lesson ImageUrl',
       value: data && data.lesson ? data.lesson.imageUrl : '',
+      isRequired: true
+    },
+    {
+      key: 'videoUrl',
+      label: 'Lesson VideoUrl',
+      value: data && data.lesson ? data.lesson.videoUrl : '',
       isRequired: true
     },
     {

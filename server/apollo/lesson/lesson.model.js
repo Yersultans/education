@@ -11,7 +11,8 @@ const Lesson = new Schema({
     enum: ['kazakh', 'russian'],
     default: 'kazakh'
   },
-  subject: { type: Schema.Types.ObjectId, ref: 'Subject' }
+  subject: { type: Schema.Types.ObjectId, ref: 'Subject' },
+  videoUrl: String
 })
 
 export default mongoose.model('Lesson', Lesson)

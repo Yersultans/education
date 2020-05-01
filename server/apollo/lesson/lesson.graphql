@@ -5,6 +5,7 @@ type Lesson {
   imageUrl: String
   language: String
   subject: Subject
+  videoUrl: String
 }
 
 input LessonInput {
@@ -13,6 +14,7 @@ input LessonInput {
   imageUrl: String
   language: String
   subject: ID
+  videoUrl: String
 }
 
 extend type Query {
