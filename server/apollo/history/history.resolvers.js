@@ -5,14 +5,15 @@ module.exports = {
       return histories
     },
     async history(_, args, ctx) {
-      const history = await ctx.models.History.find(
-        { userId: args.id },
-        'id'
-      ).exec()
+      const history = await ctx.models.History.findById(args.id, 'id').exec()
       if (!history) {
         throw new Error('History does not exist')
       }
       return history
+    },
+    async historyByUser(_, args, ctx) {
+      const histories = await ctx.models.History.find({ user: args.id }, 'id')
+      return histories
     }
   },
   Mutation: {
