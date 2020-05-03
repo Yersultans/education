@@ -6,13 +6,13 @@ import { Table, Button, Divider, Modal } from 'antd'
 import CreateForm from '../../components/CreateForm'
 import DefaultStyledContainer from '../../components/DefaultStyledContainer'
 import showConfirm from '../../components/DeleteFromTableFunc'
-import Lesson from './Lesson'
+import Activity from './Activity'
 
-const GET_LESSONS = gql`
-  query getLessons($id: ID!) {
-    subject(id: $id) {
+const GET_ACTIVITIES = gql`
+  query getActivities($id: ID!) {
+    lesson(id: $id) {
       id
-      lessons {
+      activities {
         id
         name
         language
@@ -20,30 +20,17 @@ const GET_LESSONS = gql`
     }
   }
 `
-
-const DELETE_LESSON = gql`
-  mutation deleteLesson($id: ID!) {
-    deleteLesson(id: $id)
+const DELETE_ACTIVITY = gql`
+  mutation deleteActivity($id: ID!) {
+    deleteActivity(id: $id)
   }
 `
-const ADD_LESSON = gql`
-  mutation addLesson($input: LessonInput) {
-    addLesson(input: $input) {
+const ADD_ACTIVITY = gql`
+  mutation addActivity($input: ActivityInput) {
+    addActivity(input: $input) {
       id
       name
       language
-    }
-  }
-`
-const UPDATE_SUBJECT = gql`
-  mutation updateSubject($id: ID!, $input: SubjectInput) {
-    updateSubject(id: $id, input: $input) {
-      id
-      lessons {
-        id
-        name
-        language
-      }
     }
   }
 `
@@ -51,64 +38,77 @@ const UPDATE_LESSON = gql`
   mutation updateLesson($id: ID!, $input: LessonInput) {
     updateLesson(id: $id, input: $input) {
       id
+      activities {
+        id
+        name
+        language
+      }
+    }
+  }
+`
+const UPDATE_ACTIVITY = gql`
+  mutation updateActivity($id: ID!, $input: ActivityInput) {
+    updateActivity(id: $id, input: $input) {
+      id
       name
       language
     }
   }
 `
-export default function Lessons(props) {
-  const { subjectId } = props
+export default function Activities(props) {
+  const { lessonId } = props
   const [modalVisible, setModalVisible] = useState(false)
   const [formRef, setFormRef] = useState(null)
-  const [editingLesson, setEditingLesson] = useState(null)
+  const [editingActivity, setEditingActivity] = useState(null)
   const [editModalVisible, setEditModalVisible] = useState(false)
-  const [updateSubject] = useMutation(UPDATE_SUBJECT)
   const [updateLesson] = useMutation(UPDATE_LESSON)
+  const [updateActivity] = useMutation(UPDATE_ACTIVITY)
 
-  const [addLesson] = useMutation(ADD_LESSON, {
-    update(cache, { data: { addLesson: lesson } }) {
-      let { subject } = cache.readQuery({
-        query: GET_LESSONS,
-        variables: { id: subjectId }
+  const [addActivity] = useMutation(ADD_ACTIVITY, {
+    update(cache, { data: { addActivity: activity } }) {
+      let { lesson } = cache.readQuery({
+        query: GET_ACTIVITIES,
+        variables: { id: lessonId }
       })
-      subject = {
-        id: subject.id,
-        lessons: subject.lessons ? subject.lessons.concat([lesson]) : [lesson]
+      lesson = {
+        id: lesson.id,
+        activities: lesson.activities
+          ? lesson.activities.concat([activity])
+          : [activity]
       }
-      const lessons =
-        subject && subject.lessons
-          ? subject.lessons.map(dataLesson => dataLesson.id)
+      const activties =
+        lesson && lesson.lessons
+          ? lesson.activties.map(dataActivity => dataActivity.id)
           : []
-      updateSubject({ variables: { id: subjectId, input: { lessons } } })
+      updateLesson({ variables: { id: lessonId, input: { activties } } })
       cache.writeQuery({
-        query: GET_LESSONS,
-        variables: { id: subjectId },
-        data: { subject }
+        query: GET_ACTIVITIES,
+        variables: { id: lessonId },
+        data: { lesson }
       })
     }
   })
-
-  const [deleteLesson] = useMutation(DELETE_LESSON, {
-    update(cache, { data: { deleteLesson: id } }) {
-      let { subject } = cache.readQuery({
-        query: GET_LESSONS,
-        variables: { id: subjectId }
+  const [deleteActivity] = useMutation(DELETE_ACTIVITY, {
+    update(cache, { data: { deleteActivity: id } }) {
+      let { lesson } = cache.readQuery({
+        query: GET_ACTIVITIES,
+        variables: { id: lessonId }
       })
-      subject = {
-        id: subject.id,
-        lessons: subject.lessons.filter(nLesson => nLesson.id !== id)
+      lesson = {
+        id: lesson.id,
+        activities: lesson.activities.filter(nActivity => nActivity.id !== id)
       }
-      const lessons =
-        subject && subject.lessons
-          ? subject.lessons.map(dataLesson => dataLesson.id)
+      const activities =
+        lesson && lesson.activities
+          ? lesson.activities.map(dataActivity => dataActivity.id)
           : []
 
-      updateSubject({ variables: { id: subjectId, input: { lessons } } })
+      updateLesson({ variables: { id: lessonId, input: { activities } } })
       cache.writeQuery({
-        query: GET_LESSONS,
-        variables: { id: subjectId },
+        query: GET_ACTIVITIES,
+        variables: { id: lessonId },
         data: {
-          subject
+          lesson
         }
       })
     }
@@ -120,13 +120,13 @@ export default function Lessons(props) {
     }
   }, [])
 
-  const handleLessonEdit = (state, editLesson) => {
+  const handleActivityEdit = (state, editActivity) => {
     setEditModalVisible(state)
-    setEditingLesson(editLesson)
+    setEditingActivity(editActivity)
   }
 
-  const { data, loading, error } = useQuery(GET_LESSONS, {
-    variables: { id: subjectId }
+  const { data, loading, error } = useQuery(GET_ACTIVITIES, {
+    variables: { id: lessonId }
   })
 
   const columns = [
@@ -146,13 +146,13 @@ export default function Lessons(props) {
       width: 200,
       render: (text, item) => (
         <span>
-          <Button onClick={() => handleLessonEdit(true, item)}> Edit </Button>
+          <Button onClick={() => handleActivityEdit(true, item)}> Edit </Button>
           <Divider type="vertical" />
           <Button
             type="danger"
             onClick={() => {
               showConfirm(() => {
-                deleteLesson({ variables: { id: item.id } })
+                deleteActivity({ variables: { id: item.id } })
               })
             }}
           >
@@ -162,10 +162,9 @@ export default function Lessons(props) {
       )
     }
   ]
-
   const handleUpdateClick = async () => {
-    const { id } = editingLesson
-    updateLesson({ variables: { id, input: editingLesson } })
+    const { id } = editingActivity
+    updateActivity({ variables: { id, input: editingActivity } })
   }
 
   const handleFields = () => {
@@ -211,7 +210,7 @@ export default function Lessons(props) {
         return
       }
 
-      addLesson({
+      addActivity({
         variables: {
           input: values
         }
@@ -221,7 +220,6 @@ export default function Lessons(props) {
       setModalVisible(false)
     })
   }
-
   if (loading) return <div>Loading</div>
   if (error) return <p>ERROR</p>
 
@@ -229,16 +227,16 @@ export default function Lessons(props) {
     <DefaultStyledContainer>
       <Table
         dataSource={
-          data && data.subject && data.subject.lessons
-            ? data.subject.lessons.map(lesson => {
-                return { ...lesson, key: lesson.id }
+          data && data.lesson && data.lesson.activities
+            ? data.lesson.activities.map(activity => {
+                return { ...activity, key: activity.id }
               })
             : []
         }
         columns={columns}
         title={() => (
           <div>
-            <Button onClick={showModal}>Add new Lesson</Button>
+            <Button onClick={showModal}>Add new Activity</Button>
           </div>
         )}
       />
@@ -251,14 +249,14 @@ export default function Lessons(props) {
         onCreate={handleCreate}
         fields={handleFields()}
       />
-      {editingLesson && (
+      {editingActivity && (
         <Modal
           visible={editModalVisible}
-          onCancel={() => handleLessonEdit(false, null)}
+          onCancel={() => handleActivityEdit(false, null)}
           onOk={handleUpdateClick}
           footer={null}
         >
-          <Lesson lessonId={editingLesson.id} />
+          <Activity activityId={editingActivity.id} />
         </Modal>
       )}
     </DefaultStyledContainer>

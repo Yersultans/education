@@ -71,6 +71,10 @@ module.exports = {
     async lesson(Question, _, ctx) {
       const item = await ctx.models.Question.findById(Question._id, 'lesson')
       return item.lesson
+    },
+    async activity(Question, _, ctx) {
+      const item = await ctx.models.Question.findById(Question._id, 'activity')
+      return item.activity
     }
   }
 }

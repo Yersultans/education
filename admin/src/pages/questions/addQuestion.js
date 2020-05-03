@@ -25,6 +25,11 @@ const GET_SUBJECTS = gql`
         id
         name
         language
+        activities {
+          id
+          name
+          language
+        }
       }
     }
   }
@@ -48,6 +53,7 @@ function AddQuestion({ form }) {
   const [answers, setAnswers] = useState([])
   const [subjects, setSubjects] = useState(null)
   const [lessons, setLessons] = useState(null)
+  const [activities, setActivities] = useState(null)
   const [addQuestion] = useMutation(ADD_QUESTION, {
     update(cache, { data: { addQuestion: question } }) {
       const { questions } = cache.readQuery({ query: GET_QUESTIONS })
@@ -91,7 +97,7 @@ function AddQuestion({ form }) {
     e.preventDefault()
     form.validateFields((err, values) => {
       if (!err) {
-        const { level, language, subject, lesson } = values
+        const { level, language, subject, lesson, activity } = values
         let newValue = {}
         const { options } = values
         const correctAnswers = answers.map(n => options[n])
@@ -107,7 +113,8 @@ function AddQuestion({ form }) {
           correctAnswers: filterCorrectAnswers,
           language,
           subject,
-          lesson
+          lesson,
+          activity
         }
         addQuestion({
           variables: {
@@ -133,6 +140,11 @@ function AddQuestion({ form }) {
   const handleSubject = e => {
     const filterLessons = subjects.find(subject => subject.id === e)
     setLessons(filterLessons.lessons)
+  }
+
+  const handleLesson = e => {
+    const filterActivities = lessons.find(lesson => lesson.id === e)
+    setActivities(filterActivities.activities)
   }
 
   const formItemLayout = {
@@ -287,12 +299,35 @@ function AddQuestion({ form }) {
           <Select
             placeholder="Choose lesson of Question"
             mode="single"
+            onChange={handleLesson}
             style={{ width: '60%', marginRight: 8 }}
           >
             {lessons &&
               lessons.map(lesson => (
                 <Select.Option key={lesson.id} value={lesson.id}>
                   {lesson.name}
+                </Select.Option>
+              ))}
+          </Select>
+        )}
+      </Form.Item>
+      <Form.Item {...formItemLayoutWithOutLabel}>
+        {getFieldDecorator('activity', {
+          rules: [
+            {
+              required: true
+            }
+          ]
+        })(
+          <Select
+            placeholder="Choose lesson of Question"
+            mode="single"
+            style={{ width: '60%', marginRight: 8 }}
+          >
+            {activities &&
+              activities.map(activity => (
+                <Select.Option key={activity.id} value={activity.id}>
+                  {activity.name}
                 </Select.Option>
               ))}
           </Select>

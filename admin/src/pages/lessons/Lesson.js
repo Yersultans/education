@@ -1,9 +1,13 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import { useQuery, useMutation, gql } from '@apollo/client'
 import EditComponent from '../../components/EditComponent'
+import { Tabs, Icon } from 'antd'
+import Activities from '../activity/Activities'
 
 import DefaultStyledContainer from '../../components/DefaultStyledContainer'
+
+const { TabPane } = Tabs
 
 const GET_LESSON = gql`
   query getLesson($id: ID!) {
@@ -40,6 +44,8 @@ const UPDATE_LESSON = gql`
 `
 export default function Lesson(props) {
   const { lessonId: id } = props
+
+  const [currentTab, setCurrentTab] = useState('1')
 
   const [updateLesson] = useMutation(UPDATE_LESSON)
 
@@ -95,9 +101,36 @@ export default function Lesson(props) {
     updateLesson({ variables: { id, input: values } })
   }
 
+  const handleTabChange = activeKey => {
+    setCurrentTab(activeKey)
+  }
+
   return (
     <DefaultStyledContainer>
-      <EditComponent fields={fields} onUpdateClick={handleUpdateClick} />
+      <Tabs activityKey={currentTab} onChange={handleTabChange}>
+        <TabPane
+          tab={
+            <span>
+              <Icon type="project" />
+              Lesson
+            </span>
+          }
+          key="1"
+        >
+          <EditComponent fields={fields} onUpdateClick={handleUpdateClick} />
+        </TabPane>
+        <TabPane
+          key="2"
+          tab={
+            <span>
+              <Icon type="book" />
+              Activities
+            </span>
+          }
+        >
+          <Activities lessonId={id} />
+        </TabPane>
+      </Tabs>
     </DefaultStyledContainer>
   )
 }

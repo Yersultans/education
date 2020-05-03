@@ -58,6 +58,10 @@ module.exports = {
     async videoUrl(Lesson, _, ctx) {
       const item = await ctx.models.Lesson.findById(Lesson._id, 'videoUrl')
       return item.videoUrl
+    },
+    async activities(Lesson, _, ctx) {
+      const item = await ctx.models.Lesson.findById(Lesson._id, 'activities')
+      return item.activities
     }
   }
 }

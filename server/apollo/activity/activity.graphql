@@ -1,31 +1,31 @@
-type Lesson {
+type Activity {
   id: ID!
   name: String
   content: String
   imageUrl: String
   language: String
   subject: Subject
+  lesson: Lesson
   videoUrl: String
-  activities: [Activity]
 }
 
-input LessonInput {
+input ActivityInput {
   name: String
   content: String
   imageUrl: String
   language: String
   subject: ID
+  lesson: ID
   videoUrl: String
-  activities: [ID]
 }
 
 extend type Query {
-  lessons: [Lesson]!
-  lesson(id: ID!): Lesson!
+  activities: [Activity]!
+  activity(id: ID!): Activity!
 }
 
 extend type Mutation {
-  addLesson(input: LessonInput): Lesson!
-  updateLesson(id: ID!, input: LessonInput): Lesson!
-  deleteLesson(id: ID!): ID!
+  addActivity(input: ActivityInput): Activity!
+  updateActivity(id: ID!, input: ActivityInput): Activity!
+  deleteActivity(id: ID!): ID!
 }

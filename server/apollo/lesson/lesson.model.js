@@ -12,7 +12,8 @@ const Lesson = new Schema({
     default: 'kazakh'
   },
   subject: { type: Schema.Types.ObjectId, ref: 'Subject' },
-  videoUrl: String
+  videoUrl: String,
+  activities: [{ type: Schema.Types.ObjectId, ref: 'Activity' }]
 })
 
 export default mongoose.model('Lesson', Lesson)

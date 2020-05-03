@@ -2,11 +2,10 @@ import mongoose from 'mongoose'
 
 const { Schema } = mongoose
 
-const QuestionSchema = new Schema({
-  text: String,
-  options: [String],
-  level: Number,
-  correctAnswers: [String],
+const Activity = new Schema({
+  name: String,
+  content: String,
+  imageUrl: String,
   language: {
     type: String,
     enum: ['kazakh', 'russian'],
@@ -14,7 +13,7 @@ const QuestionSchema = new Schema({
   },
   subject: { type: Schema.Types.ObjectId, ref: 'Subject' },
   lesson: { type: Schema.Types.ObjectId, ref: 'Lesson' },
-  activity: { type: Schema.Types.ObjectId, ref: 'Activity' }
+  videoUrl: String
 })
 
-export default mongoose.model('Question', QuestionSchema)
+export default mongoose.model('Activity', Activity)

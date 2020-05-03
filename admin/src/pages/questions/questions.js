@@ -10,15 +10,7 @@ const GET_DATA = gql`
     questions {
       id
       text
-      correctAnswers
-      options
       language
-      subject {
-        id
-      }
-      lesson {
-        id
-      }
     }
   }
 `
@@ -28,15 +20,7 @@ const GET_QUESTIONS = gql`
     questions {
       id
       text
-      correctAnswers
-      options
       language
-      subject {
-        id
-      }
-      lesson {
-        id
-      }
     }
   }
 `
@@ -68,9 +52,9 @@ export default function Questions() {
       key: 'text'
     },
     {
-      title: 'Options',
-      dataIndex: 'options',
-      key: 'options',
+      title: 'Language',
+      dataIndex: 'language',
+      key: 'language',
       inputType: 'dynamic'
     },
     {

@@ -5,6 +5,7 @@ import user from './user'
 import question from './question'
 import subject from './subject'
 import lesson from './lesson'
+import activity from './activity'
 import form from './form'
 import formMessage from './formMessage'
 import post from './post'
@@ -25,6 +26,7 @@ const gqlServerConfig = {
     question.typeDefs,
     subject.typeDefs,
     lesson.typeDefs,
+    activity.typeDefs,
     form.typeDefs,
     formMessage.typeDefs,
     post.typeDefs,
@@ -38,6 +40,7 @@ const gqlServerConfig = {
     question.resolvers,
     subject.resolvers,
     lesson.resolvers,
+    activity.resolvers,
     form.resolvers,
     formMessage.resolvers,
     post.resolvers,
@@ -53,6 +56,7 @@ const gqlServerConfig = {
         Question: question.model,
         Subject: subject.model,
         Lesson: lesson.model,
+        Activity: activity.model,
         Form: form.model,
         FormMessage: formMessage.model,
         Post: post.model,
