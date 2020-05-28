@@ -55,11 +55,11 @@ module.exports = {
     },
     async createdAt(Post, _, ctx) {
       const item = await ctx.models.Post.findById(Post._id, 'created_at')
-      return item.createdAt
+      return item.created_at
     },
-    async updateAt(Post, _, ctx) {
-      const item = await ctx.models.Post.findById(Post._id, 'updateAt')
-      return item.updateAt
+    async updatedAt(Post, _, ctx) {
+      const item = await ctx.models.Post.findById(Post._id, 'updatedAt')
+      return item.updatedAt
     }
   }
 }

@@ -4,8 +4,8 @@ type Form {
   description: String
   user: User
   messages: [FormMessage]
-  createdAt: String
-  updateAt: String
+  createdAt: DateTime
+  updatedAt: DateTime
 }
 
 input FormInput {

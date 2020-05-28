@@ -4,8 +4,8 @@ type History {
   questions: [Progress]
   correctAnswers: Int
   total: Int
-  createdAt: String
-  updateAt: String
+  createdAt: DateTime
+  updatedAt: DateTime
 }
 
 input HistoryInput {

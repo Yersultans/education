@@ -10,7 +10,7 @@ const FormMessage = new Schema(
     post: { type: Schema.Types.ObjectId, ref: 'Post' },
     form: { type: Schema.Types.ObjectId, ref: 'Form' }
   },
-  { timestamps: { createdAt: 'created_at', updateAt: 'update_at' } }
+  { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } }
 )
 
 export default mongoose.model('FormMessage', FormMessage)

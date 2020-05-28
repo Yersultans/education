@@ -9,7 +9,7 @@ const Form = new Schema(
     user: { type: Schema.Types.ObjectId, ref: 'User' },
     messages: [{ type: Schema.Types.ObjectId, ref: 'FormMessage' }]
   },
-  { timestamps: { createdAt: 'created_at', updateAt: 'update_at' } }
+  { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } }
 )
 
 export default mongoose.model('Form', Form)

@@ -3,8 +3,8 @@ type FormMessage {
   content: String
   user: User
   messages: [FormMessage]
-  createdAt: String
-  updateAt: String
+  createdAt: DateTime
+  updatedAt: DateTime
   post: Post
   form: Form
 }

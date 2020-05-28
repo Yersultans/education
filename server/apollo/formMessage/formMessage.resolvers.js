@@ -64,16 +64,16 @@ module.exports = {
     async createdAt(FormMessage, _, ctx) {
       const item = await ctx.models.FormMessage.findById(
         FormMessage._id,
-        'createdAt'
+        'created_at'
       )
-      return item.createdAt
+      return item.created_at
     },
-    async updateAt(FormMessage, _, ctx) {
+    async updatedAt(FormMessage, _, ctx) {
       const item = await ctx.models.FormMessage.findById(
         FormMessage._id,
-        'updateAt'
+        'updatedAt'
       )
-      return item.updateAt
+      return item.updatedAt
     },
     async post(FormMessage, _, ctx) {
       const item = await ctx.models.FormMessage.findById(

@@ -14,7 +14,19 @@ import history from './history'
 
 import gqlLoader from './gqlLoader'
 
+const { GraphQLScalarType } = require('graphql')
+
 const { ApolloServer } = require('apollo-server-express')
+
+const resolverMap = {
+  DateTime: new GraphQLScalarType({
+    name: 'DateTime',
+    description: 'A date and time, represented as an ISO-8601 string',
+    serialize: value => value.toISOString(),
+    parseValue: value => new Date(value),
+    parseLiteral: ast => new Date(ast.value)
+  })
+}
 
 const gqlServerConfig = {
   introspection: true,
@@ -45,7 +57,8 @@ const gqlServerConfig = {
     formMessage.resolvers,
     post.resolvers,
     progress.resolvers,
-    history.resolvers
+    history.resolvers,
+    resolverMap
   ),
   context: ({ req }) => {
     return {

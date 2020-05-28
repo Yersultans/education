@@ -63,11 +63,11 @@ module.exports = {
     },
     async createdAt(History, _, ctx) {
       const item = await ctx.models.History.findById(History._id, 'created_at')
-      return item.createdAt
+      return item.created_at
     },
-    async updateAt(History, _, ctx) {
-      const item = await ctx.models.History.findById(History._id, 'updateAt')
-      return item.updateAt
+    async updatedAt(History, _, ctx) {
+      const item = await ctx.models.History.findById(History._id, 'updatedAt')
+      return item.updatdeAt
     }
   }
 }
