@@ -24,7 +24,7 @@ input HistoryFilterInput {
 extend type Query {
   histories: [History]
   history(id: ID!): History!
-  historyByUser(id: ID): [History]
+  historyByUser(id: ID!): [History]
 }
 
 extend type Mutation {
