@@ -17,7 +17,7 @@ extend type Query {
 }
 
 extend type Mutation {
-  registerUser(input: RegisterUserInput): User!
+  registerUser(input: UserInput): User!
   loginUser(input: LoginUserInput): AuthData!
   loginAdmin(input: LoginUserInput): AuthData!
   logout: Response!
