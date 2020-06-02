@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react'
 import { Button, Form, Icon, Input, Checkbox, Switch, Select } from 'antd'
-import { useQuery, useMutation, gql } from '@apollo/client'
+import { useQuery, useMutation, gql, useLazyQuery } from '@apollo/client'
 import TextEditor from '../../components/nTextEditor'
 
 const GET_QUESTIONS = gql`
@@ -15,25 +15,25 @@ const GET_QUESTIONS = gql`
     }
   }
 `
-const GET_SUBJECTS = gql`
-  query getSubjects {
-    subjects {
-      id
-      name
-      language
-      lessons {
-        id
-        name
-        language
-        activities {
-          id
-          name
-          language
-        }
-      }
-    }
-  }
-`
+// const GET_SUBJECTS = gql`
+//   query getSubjects {
+//     subjects {
+//       id
+//       name
+//       language
+//       lessons {
+//         id
+//         name
+//         language
+//         activities {
+//           id
+//           name
+//           language
+//         }
+//       }
+//     }
+//   }
+// `
 const ADD_QUESTION = gql`
   mutation addQuestion($input: QuestionInput) {
     addQuestion(input: $input) {
@@ -41,6 +41,42 @@ const ADD_QUESTION = gql`
       text
       level
       options
+    }
+  }
+`
+
+const GET_SUBJECTS = gql`
+  query getSubjectsByLanguage($input: FilterSubjectInput) {
+    subjectsBy(input: $input) {
+      id
+      name
+      language
+    }
+  }
+`
+
+const GET_LESSONS = gql`
+  query getLessons($id: ID!) {
+    subject(id: $id) {
+      id
+      lessons {
+        id
+        name
+        language
+      }
+    }
+  }
+`
+
+const GET_ACTIVITIES = gql`
+  query getActivities($id: ID!) {
+    lesson(id: $id) {
+      id
+      activities {
+        id
+        name
+        language
+      }
     }
   }
 `
@@ -54,6 +90,22 @@ function AddQuestion({ form }) {
   const [subjects, setSubjects] = useState(null)
   const [lessons, setLessons] = useState(null)
   const [activities, setActivities] = useState(null)
+
+  const [
+    getSubjects,
+    { data: dataSubjects, loading: loadingSubjects, error: errorSubjects }
+  ] = useLazyQuery(GET_SUBJECTS)
+
+  const [
+    getLessons,
+    { data: dataLessons, loading: loadingLessons, error: errorLessons }
+  ] = useLazyQuery(GET_LESSONS)
+
+  const [
+    getActivities,
+    { data: dataActivities, loading: loadingActivities, error: errorActivities }
+  ] = useLazyQuery(GET_ACTIVITIES)
+
   const [addQuestion] = useMutation(ADD_QUESTION, {
     update(cache, { data: { addQuestion: question } }) {
       const { questions } = cache.readQuery({ query: GET_QUESTIONS })
@@ -71,9 +123,40 @@ function AddQuestion({ form }) {
     }
   }, [])
 
-  const { data: dataSubjects, loading, error } = useQuery(GET_SUBJECTS)
-  if (loading) return <div> Loading </div>
-  if (error) return <div> Error </div>
+  React.useEffect(() => {
+    if (
+      dataSubjects &&
+      dataSubjects.subjectsBy &&
+      !loadingSubjects &&
+      !errorSubjects
+    ) {
+      setSubjects(dataSubjects.subjectsBy)
+    }
+  }, [dataSubjects, loadingSubjects, errorSubjects])
+
+  React.useEffect(() => {
+    if (
+      dataLessons &&
+      dataLessons.subject &&
+      dataLessons.subject.lessons &&
+      !loadingLessons &&
+      !errorLessons
+    ) {
+      setLessons(dataLessons.subject.lessons)
+    }
+  }, [dataLessons, loadingLessons, errorLessons])
+
+  React.useEffect(() => {
+    if (
+      dataActivities &&
+      dataActivities.lesson &&
+      dataActivities.lesson.activities &&
+      !loadingActivities &&
+      !errorActivities
+    ) {
+      setActivities(dataActivities.lesson.activities)
+    }
+  }, [dataActivities, loadingActivities, errorActivities])
 
   const remove = k => {
     const keys = form.getFieldValue('keys')
@@ -131,20 +214,15 @@ function AddQuestion({ form }) {
   }
 
   const handleLanguage = e => {
-    const language = e
-    const nSubjects = dataSubjects && dataSubjects.subjects
-    const filterSubjects = nSubjects.filter(sub => language === sub.language)
-    setSubjects(filterSubjects)
+    getSubjects({ variables: { input: { language: e } } })
   }
 
   const handleSubject = e => {
-    const filterLessons = subjects.find(subject => subject.id === e)
-    setLessons(filterLessons.lessons)
+    getLessons({ variables: { id: e } })
   }
 
   const handleLesson = e => {
-    const filterActivities = lessons.find(lesson => lesson.id === e)
-    setActivities(filterActivities.activities)
+    getActivities({ variables: { input: { id: e } } })
   }
 
   const formItemLayout = {
@@ -178,11 +256,14 @@ function AddQuestion({ form }) {
           {
             required: true,
             whitespace: true,
-            message: "Please input passenger's name or delete this field."
+            message: 'Please enter the response option or delete this field.'
           }
         ]
       })(
-        <Input placeholder="options" style={{ width: '80%', marginRight: 8 }} />
+        <Input
+          placeholder="Варианты"
+          style={{ width: '80%', marginRight: 8 }}
+        />
       )}
       {keys.length > 1 ? (
         <>
@@ -198,15 +279,11 @@ function AddQuestion({ form }) {
   ))
   return (
     <Form onSubmit={handleSubmit} ref={saveFormRef}>
-      <Form.Item
-        key="Question"
-        label="Question"
-        {...formItemLayoutWithOutLabel}
-      >
+      <Form.Item key="Question" label="Вопрос" {...formItemLayoutWithOutLabel}>
         {getFieldDecorator('text', {
           rules: [
             {
-              message: `Please give a text to a Question`
+              message: `Пожалуйста, дайте текст вопроса`
             }
           ]
         })(
@@ -226,18 +303,18 @@ function AddQuestion({ form }) {
           ]
         })(
           <Select
-            placeholder="Choose level of Question"
+            placeholder="Выберите уровень вопроса"
             mode="single"
             style={{ width: '60%', marginRight: 8 }}
           >
             <Select.Option key={1} value={1}>
-              Easy
+              Легко
             </Select.Option>
             <Select.Option key={2} value={2}>
-              Medium
+              Средний
             </Select.Option>
             <Select.Option key={3} value={3}>
-              Hard
+              Трудный
             </Select.Option>
           </Select>
         )}
@@ -251,16 +328,16 @@ function AddQuestion({ form }) {
           ]
         })(
           <Select
-            placeholder="Choose language of Question"
+            placeholder="Выберите язык вопроса"
             mode="single"
             onChange={handleLanguage}
             style={{ width: '60%', marginRight: 8 }}
           >
             <Select.Option key="kazakh" value="kazakh">
-              kazakh
+              Казахский
             </Select.Option>
             <Select.Option key="russian" value="russian">
-              russian
+              Русский
             </Select.Option>
           </Select>
         )}
@@ -274,10 +351,12 @@ function AddQuestion({ form }) {
           ]
         })(
           <Select
-            placeholder="Choose subject of Question"
+            placeholder="Выберите Пердмет вопроса"
             mode="single"
             onChange={handleSubject}
             style={{ width: '60%', marginRight: 8 }}
+            disabled={!subjects}
+            loading={loadingSubjects}
           >
             {subjects &&
               subjects.map(subject => (
@@ -297,10 +376,12 @@ function AddQuestion({ form }) {
           ]
         })(
           <Select
-            placeholder="Choose lesson of Question"
+            placeholder="Выберите Урок вопроса"
             mode="single"
             onChange={handleLesson}
             style={{ width: '60%', marginRight: 8 }}
+            disabled={!lessons}
+            loading={loadingLessons}
           >
             {lessons &&
               lessons.map(lesson => (
@@ -320,9 +401,11 @@ function AddQuestion({ form }) {
           ]
         })(
           <Select
-            placeholder="Choose lesson of Question"
+            placeholder="Выберите Раздел вопроса"
             mode="single"
             style={{ width: '60%', marginRight: 8 }}
+            disabled={!activities}
+            loading={loadingActivities}
           >
             {activities &&
               activities.map(activity => (
@@ -340,12 +423,12 @@ function AddQuestion({ form }) {
           onClick={add}
           style={{ width: '60%', marginRight: 8 }}
         >
-          <Icon type="plus" /> Add field
+          <Icon type="plus" /> Добавить Варианты
         </Button>
       </Form.Item>
       <Form.Item {...formItemLayoutWithOutLabel}>
         <Button type="primary" htmlType="submit">
-          Submit
+          Отправить
         </Button>
       </Form.Item>
     </Form>

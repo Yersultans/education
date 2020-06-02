@@ -48,7 +48,7 @@ function Login(props) {
         key: 'token',
         value: `${data.loginAdmin.token}`
       })
-      displayMessage({ type: 'notify', message: 'Successfully logged in' })
+      displayMessage({ type: 'notify', message: 'Вы успешно вошел в систему' })
       updateCurrentUser()
       props.history.push('/')
     }
@@ -71,7 +71,7 @@ function Login(props) {
             <FormItem>
               {getFieldDecorator('username', {
                 rules: [
-                  { required: true, message: 'Please input your username!' }
+                  { required: true, message: 'Пожалуйста введите username!' }
                 ]
               })(
                 <Input
@@ -85,7 +85,7 @@ function Login(props) {
             <FormItem>
               {getFieldDecorator('password', {
                 rules: [
-                  { required: true, message: 'Please input your Password!' }
+                  { required: true, message: 'Пожалуйста введите пароль!' }
                 ]
               })(
                 <Input
@@ -93,7 +93,7 @@ function Login(props) {
                     <Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />
                   }
                   type="password"
-                  placeholder="Password"
+                  placeholder="Пароль"
                 />
               )}
             </FormItem>
@@ -103,9 +103,9 @@ function Login(props) {
                 htmlType="submit"
                 className="login-form-button"
               >
-                Login
+                Войти
               </Button>
-              Or <a href="/register">register now!</a>
+              или <a href="/register">Создать аккаунт!</a>
             </FormItem>
           </Form>
         </Col>

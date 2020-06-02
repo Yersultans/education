@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import styled from 'styled-components'
 import { useQuery, useMutation, gql } from '@apollo/client'
 import EditComponent from '../../components/EditComponent'
-import { Tabs, Icon } from 'antd'
+import { Tabs, Icon, Spin } from 'antd'
 import Activities from '../activity/Activities'
 
 import DefaultStyledContainer from '../../components/DefaultStyledContainer'
@@ -51,37 +51,42 @@ export default function Lesson(props) {
 
   const { data, loading, error } = useQuery(GET_LESSON, { variables: { id } })
 
-  if (loading) return <div>loading</div>
+  if (loading)
+    return (
+      <div>
+        <Spin />
+      </div>
+    )
   if (error) return <div>ERROR</div>
 
   const fields = [
     {
       key: 'name',
-      label: 'Lesson Name',
+      label: 'Название',
       value: data && data.lesson ? data.lesson.name : '',
       isRequired: true
     },
     {
       key: 'content',
-      label: 'Lesson Content',
+      label: 'Контент',
       value: data && data.lesson ? data.lesson.content : '',
       type: 'text'
     },
     {
       key: 'imageUrl',
-      label: 'Lesson ImageUrl',
+      label: 'ImageUrl',
       value: data && data.lesson ? data.lesson.imageUrl : '',
       isRequired: true
     },
     {
       key: 'videoUrl',
-      label: 'Lesson VideoUrl',
+      label: 'VideoUrl',
       value: data && data.lesson ? data.lesson.videoUrl : '',
       isRequired: true
     },
     {
       key: 'language',
-      label: 'Lesson Language',
+      label: 'Язык',
       value: data && data.lesson ? data.lesson.language : '',
       type: 'select',
       options: [
@@ -112,7 +117,7 @@ export default function Lesson(props) {
           tab={
             <span>
               <Icon type="project" />
-              Lesson
+              Урок
             </span>
           }
           key="1"
@@ -124,7 +129,7 @@ export default function Lesson(props) {
           tab={
             <span>
               <Icon type="book" />
-              Activities
+              Разделы
             </span>
           }
         >

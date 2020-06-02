@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react'
 import { useQuery, useMutation, gql } from '@apollo/client'
 import { Link } from 'react-router-dom'
-import { Table, Button, Divider } from 'antd'
+import { Table, Button, Divider, Spin } from 'antd'
 
 import CreateForm from '../../components/CreateForm'
 import DefaultStyledContainer from '../../components/DefaultStyledContainer'
@@ -87,23 +87,23 @@ export default function Posts() {
 
   const columns = [
     {
-      title: 'Name',
+      title: 'Название',
       dataIndex: 'name',
       key: 'name'
     },
     {
-      title: 'User',
+      title: 'пользователь',
       dataIndex: 'user.username',
       key: 'user.username'
     },
     {
-      title: 'Action',
+      title: 'Действие',
       key: 'action',
       width: 200,
       render: (text, item) => (
         <span>
           <Link to={`/posts/${item.id}`}>
-            <Button> Edit </Button>
+            <Button> Редактировать </Button>
           </Link>
           <Divider type="vertical" />
           <Button
@@ -114,7 +114,7 @@ export default function Posts() {
               })
             }}
           >
-            Delete
+            Удалить
           </Button>
         </span>
       )
@@ -125,7 +125,7 @@ export default function Posts() {
     const fields = [
       {
         key: 'name',
-        label: 'name'
+        label: 'Название'
       },
       {
         key: 'imageUrl',
@@ -163,7 +163,12 @@ export default function Posts() {
     })
   }
 
-  if (loading || loadingUser) return <div>Loading</div>
+  if (loading || loadingUser)
+    return (
+      <div>
+        <Spin />
+      </div>
+    )
   if (error || errorUser) return <p>ERROR</p>
 
   return (
@@ -179,13 +184,13 @@ export default function Posts() {
         columns={columns}
         title={() => (
           <div>
-            <Button onClick={showModal}>Add new Post</Button>
+            <Button onClick={showModal}>Добавить новый Пост</Button>
           </div>
         )}
       />
 
       <CreateForm
-        title="Add new Post"
+        title="Добавить новый Пост"
         ref={saveFormRef}
         visible={modalVisible}
         onCancel={handleCancel}

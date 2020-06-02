@@ -2,6 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import { useQuery, useMutation, gql } from '@apollo/client'
 import EditComponent from '../../components/EditComponent'
+import { Spin } from 'antd'
 
 import DefaultStyledContainer from '../../components/DefaultStyledContainer'
 
@@ -39,25 +40,30 @@ export default function Post(props) {
 
   const { data, loading, error } = useQuery(GET_POST, { variables: { id } })
 
-  if (loading) return <div>loading</div>
+  if (loading)
+    return (
+      <div>
+        <Spin />
+      </div>
+    )
   if (error) return <div>ERROR</div>
 
   const fields = [
     {
       key: 'name',
-      label: 'Post Name',
+      label: 'Название',
       value: data && data.post ? data.post.name : '',
       isRequired: true
     },
     {
       key: 'imageUrl',
-      label: 'Post ImageUrl',
+      label: 'ImageUrl',
       value: data && data.post ? data.post.imageUrl : '',
       isRequired: true
     },
     {
       key: 'content',
-      label: 'Post Content',
+      label: 'Контент',
       value: data && data.post ? data.post.content : '',
       type: 'text',
       isRequired: true

@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react'
 import { useQuery, useMutation, gql } from '@apollo/client'
 import { Link } from 'react-router-dom'
-import { Table, Button, Divider, Modal } from 'antd'
+import { Table, Button, Divider, Modal, Spin } from 'antd'
 
 import CreateForm from '../../components/CreateForm'
 import DefaultStyledContainer from '../../components/DefaultStyledContainer'
@@ -131,22 +131,25 @@ export default function Lessons(props) {
 
   const columns = [
     {
-      title: 'Name',
+      title: 'Название',
       dataIndex: 'name',
       key: 'name'
     },
     {
-      title: 'Language',
+      title: 'Язык',
       dataIndex: 'language',
       key: 'language'
     },
     {
-      title: 'Action',
+      title: 'Действие',
       key: 'action',
       width: 200,
       render: (text, item) => (
         <span>
-          <Button onClick={() => handleLessonEdit(true, item)}> Edit </Button>
+          <Button onClick={() => handleLessonEdit(true, item)}>
+            {' '}
+            Редактировать{' '}
+          </Button>
           <Divider type="vertical" />
           <Button
             type="danger"
@@ -156,7 +159,7 @@ export default function Lessons(props) {
               })
             }}
           >
-            Delete
+            Удалить
           </Button>
         </span>
       )
@@ -172,7 +175,7 @@ export default function Lessons(props) {
     const fields = [
       {
         key: 'name',
-        label: 'name'
+        label: 'Название'
       },
       {
         key: 'imageUrl',
@@ -180,7 +183,7 @@ export default function Lessons(props) {
       },
       {
         key: 'language',
-        label: 'language',
+        label: 'Язык',
         type: 'select',
         options: [
           {
@@ -222,7 +225,12 @@ export default function Lessons(props) {
     })
   }
 
-  if (loading) return <div>Loading</div>
+  if (loading)
+    return (
+      <div>
+        <Spin />
+      </div>
+    )
   if (error) return <p>ERROR</p>
 
   return (
@@ -238,13 +246,13 @@ export default function Lessons(props) {
         columns={columns}
         title={() => (
           <div>
-            <Button onClick={showModal}>Add new Lesson</Button>
+            <Button onClick={showModal}>Добавить новый Урок</Button>
           </div>
         )}
       />
 
       <CreateForm
-        title="Add new Lesson"
+        title="Добавить новый Урок"
         ref={saveFormRef}
         visible={modalVisible}
         onCancel={handleCancel}

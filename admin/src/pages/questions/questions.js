@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react'
 import { useQuery, useMutation, gql } from '@apollo/client'
-import { Button, Divider, Table } from 'antd'
+import { Button, Divider, Table, Spin } from 'antd'
 import { Link } from 'react-router-dom'
 import DefaultStyledContainer from '../../components/DefaultStyledContainer'
 import showConfirm from '../../components/DeleteFromTableFunc'
@@ -47,12 +47,12 @@ export default function Questions() {
 
   const columns = [
     {
-      title: 'Question',
+      title: 'Вопросы',
       dataIndex: 'text',
       key: 'text'
     },
     {
-      title: 'Language',
+      title: 'Язык',
       dataIndex: 'language',
       key: 'language',
       inputType: 'dynamic'
@@ -63,7 +63,7 @@ export default function Questions() {
       render: (text, item) => (
         <span>
           <Link to={`/questions/${item.id}`}>
-            <Button> Edit </Button>
+            <Button> Редактировать </Button>
           </Link>
           <Divider type="vertical" />
           <Button
@@ -74,14 +74,19 @@ export default function Questions() {
               })
             }}
           >
-            Delete
+            Удалить
           </Button>
         </span>
       )
     }
   ]
 
-  if (loading) return <div> Loading </div>
+  if (loading)
+    return (
+      <div>
+        <Spin />
+      </div>
+    )
   if (error) return <div> Error </div>
 
   return (
@@ -99,7 +104,7 @@ export default function Questions() {
         title={() => (
           <>
             <Link to="/addQuestion">
-              <Button>Add new NQuestion</Button>
+              <Button>Добавить новый Вопросы</Button>
             </Link>
           </>
         )}

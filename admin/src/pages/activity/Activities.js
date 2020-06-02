@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react'
 import { useQuery, useMutation, gql } from '@apollo/client'
 import { Link } from 'react-router-dom'
-import { Table, Button, Divider, Modal } from 'antd'
+import { Table, Button, Divider, Modal, Spin } from 'antd'
 
 import CreateForm from '../../components/CreateForm'
 import DefaultStyledContainer from '../../components/DefaultStyledContainer'
@@ -131,22 +131,25 @@ export default function Activities(props) {
 
   const columns = [
     {
-      title: 'Name',
+      title: 'Название',
       dataIndex: 'name',
       key: 'name'
     },
     {
-      title: 'Language',
+      title: 'Язык',
       dataIndex: 'language',
       key: 'language'
     },
     {
-      title: 'Action',
+      title: 'Действие',
       key: 'action',
       width: 200,
       render: (text, item) => (
         <span>
-          <Button onClick={() => handleActivityEdit(true, item)}> Edit </Button>
+          <Button onClick={() => handleActivityEdit(true, item)}>
+            {' '}
+            Редактировать{' '}
+          </Button>
           <Divider type="vertical" />
           <Button
             type="danger"
@@ -156,7 +159,7 @@ export default function Activities(props) {
               })
             }}
           >
-            Delete
+            Удалить
           </Button>
         </span>
       )
@@ -171,7 +174,7 @@ export default function Activities(props) {
     const fields = [
       {
         key: 'name',
-        label: 'name'
+        label: 'Название'
       },
       {
         key: 'imageUrl',
@@ -179,7 +182,7 @@ export default function Activities(props) {
       },
       {
         key: 'language',
-        label: 'language',
+        label: 'Язык',
         type: 'select',
         options: [
           {
@@ -220,7 +223,12 @@ export default function Activities(props) {
       setModalVisible(false)
     })
   }
-  if (loading) return <div>Loading</div>
+  if (loading)
+    return (
+      <div>
+        <Spin />
+      </div>
+    )
   if (error) return <p>ERROR</p>
 
   return (
@@ -236,13 +244,13 @@ export default function Activities(props) {
         columns={columns}
         title={() => (
           <div>
-            <Button onClick={showModal}>Add new Activity</Button>
+            <Button onClick={showModal}>Добавить новый Раздел</Button>
           </div>
         )}
       />
 
       <CreateForm
-        title="Add new Lesson"
+        title="Добавить новый Раздел"
         ref={saveFormRef}
         visible={modalVisible}
         onCancel={handleCancel}

@@ -4,16 +4,16 @@ import { Layout, Menu, Icon } from 'antd'
 import AuthContext from '../context/AuthContext'
 
 const adminMenu = [
-  { link: '/users', name: 'Users', icon: 'user' },
-  { link: '/questions', name: 'Questions', icon: 'question-circle' },
-  { link: '/subjects', name: 'Subjects', icon: 'cluster' },
-  { link: '/posts', name: 'Posts', icon: 'book' }
+  { link: '/users', name: 'Пользователи', icon: 'user' },
+  { link: '/questions', name: 'Вопросы', icon: 'question-circle' },
+  { link: '/subjects', name: 'Предметы', icon: 'cluster' },
+  { link: '/posts', name: 'Посты', icon: 'book' }
 ]
 
 const contentManagerMenu = [
-  { link: '/questions', name: 'Questions', icon: 'question-circle' },
-  { link: '/subjects', name: 'Subjects', icon: 'cluster' },
-  { link: '/posts', name: 'Posts', icon: 'book' }
+  { link: '/questions', name: 'Вопросы', icon: 'question-circle' },
+  { link: '/subjects', name: 'Предметы', icon: 'cluster' },
+  { link: '/posts', name: 'Посты', icon: 'book' }
 ]
 
 function Header(props) {

@@ -4,6 +4,7 @@ import { useQuery, useMutation, gql } from '@apollo/client'
 import EditComponent from '../../components/EditComponent'
 
 import DefaultStyledContainer from '../../components/DefaultStyledContainer'
+import { Spin } from 'antd'
 
 const GET_ACTIVITY = gql`
   query getActivity($id: ID!) {
@@ -45,37 +46,42 @@ export default function Activity(props) {
 
   const { data, loading, error } = useQuery(GET_ACTIVITY, { variables: { id } })
 
-  if (loading) return <div>loading</div>
+  if (loading)
+    return (
+      <div>
+        <Spin />
+      </div>
+    )
   if (error) return <div>ERROR</div>
 
   const fields = [
     {
       key: 'name',
-      label: 'Activity Name',
+      label: 'Название',
       value: data && data.activity ? data.activity.name : '',
       isRequired: true
     },
     {
       key: 'content',
-      label: 'Activity Content',
+      label: 'Контент',
       value: data && data.activity ? data.activity.content : '',
       type: 'text'
     },
     {
       key: 'imageUrl',
-      label: 'Activity ImageUrl',
+      label: 'ImageUrl',
       value: data && data.activity ? data.activity.imageUrl : '',
       isRequired: true
     },
     {
       key: 'videoUrl',
-      label: 'Activity VideoUrl',
+      label: 'VideoUrl',
       value: data && data.activity ? data.activity.videoUrl : '',
       isRequired: true
     },
     {
       key: 'language',
-      label: 'Activity Language',
+      label: 'Язык',
       value: data && data.activity ? data.activity.language : '',
       type: 'select',
       options: [

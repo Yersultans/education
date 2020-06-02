@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react'
 import styled from 'styled-components'
 import { useQuery, useMutation, gql } from '@apollo/client'
 import EditComponent from '../../components/EditComponent'
-import { Tabs, Icon } from 'antd'
+import { Tabs, Icon, Spin } from 'antd'
 import Lessons from '../lessons/Lessons'
 
 import DefaultStyledContainer from '../../components/DefaultStyledContainer'
@@ -46,12 +46,17 @@ export default function Subject(props) {
 
   const { data, loading, error } = useQuery(GET_SUBJECT, { variables: { id } })
 
-  if (loading) return <div>loading</div>
+  if (loading)
+    return (
+      <div>
+        <Spin />
+      </div>
+    )
   if (error) return <div>ERROR</div>
 
   const fields = [
     {
-      key: 'name',
+      key: 'Название',
       label: 'Subject Name',
       value: data && data.subject ? data.subject.name : '',
       isRequired: true
@@ -63,7 +68,7 @@ export default function Subject(props) {
       isRequired: true
     },
     {
-      key: 'language',
+      key: 'Язык',
       label: 'Subject Language',
       value: data && data.subject ? data.subject.language : '',
       type: 'select',
@@ -95,7 +100,7 @@ export default function Subject(props) {
           tab={
             <span>
               <Icon type="project" />
-              Subject
+              Предмет
             </span>
           }
           key="1"
@@ -107,7 +112,7 @@ export default function Subject(props) {
           tab={
             <span>
               <Icon type="book" />
-              Lessons
+              Уроки
             </span>
           }
         >

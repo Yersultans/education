@@ -13,9 +13,14 @@ input SubjectInput {
   lessons: [ID]
 }
 
+input FilterSubjectInput {
+  language: String
+}
+
 extend type Query {
   subjects: [Subject]!
   subject(id: ID!): Subject!
+  subjectsBy(input: FilterSubjectInput): [Subject]
 }
 
 extend type Mutation {

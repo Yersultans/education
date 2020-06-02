@@ -55,7 +55,7 @@ function Register(props) {
           <FormItem>
             {getFieldDecorator('username', {
               rules: [
-                { required: true, message: 'Please input your username!' }
+                { required: true, message: 'Пожалуйста введите username!' }
               ]
             })(
               <Input
@@ -68,16 +68,14 @@ function Register(props) {
           </FormItem>
           <FormItem>
             {getFieldDecorator('password', {
-              rules: [
-                { required: true, message: 'Please input your Password!' }
-              ]
+              rules: [{ required: true, message: 'Пожалуйста введите пароль!' }]
             })(
               <Input
                 prefix={
                   <Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />
                 }
                 type="password"
-                placeholder="Password"
+                placeholder="Пароль"
               />
             )}
           </FormItem>
@@ -87,9 +85,9 @@ function Register(props) {
               htmlType="submit"
               className="login-form-button"
             >
-              Register
+              Зарегистрироваться
             </Button>
-            Or <a href="/login">login now!</a>
+            или <a href="/login">Войти!</a>
           </FormItem>
         </Form>
       </Col>

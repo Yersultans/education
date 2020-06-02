@@ -10,6 +10,10 @@ module.exports = {
         throw new Error('Lesson does not exist')
       }
       return subject
+    },
+    async subjectsBy(_, { input }, ctx) {
+      const subjects = await ctx.models.Subject.find({ ...input })
+      return subjects
     }
   },
   Mutation: {
