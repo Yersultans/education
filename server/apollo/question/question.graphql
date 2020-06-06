@@ -24,6 +24,7 @@ input QuestionInput {
 input QuestionFilterInput {
   subject: ID
   lesson: ID
+  activity: ID
 }
 
 extend type Query {
