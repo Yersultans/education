@@ -14,9 +14,10 @@ module.exports = {
   Mutation: {
     async registerUser(_, { input }, ctx) {
       try {
-        const { username, password } = input
+        const { password } = input
         const { User } = ctx.models
-        const user = await User.register(new User({ username }), password)
+        delete input.password
+        const user = await User.register(new User(input), password)
         return user
       } catch (err) {
         throw new Error(err)
