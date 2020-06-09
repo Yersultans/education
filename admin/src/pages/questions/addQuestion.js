@@ -222,7 +222,7 @@ function AddQuestion({ form }) {
   }
 
   const handleLesson = e => {
-    getActivities({ variables: { input: { id: e } } })
+    getActivities({ variables: { id: e } })
   }
 
   const formItemLayout = {
