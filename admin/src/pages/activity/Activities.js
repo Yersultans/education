@@ -76,11 +76,11 @@ export default function Activities(props) {
           ? lesson.activities.concat([activity])
           : [activity]
       }
-      const activties =
+      const activities =
         lesson && lesson.lessons
           ? lesson.activties.map(dataActivity => dataActivity.id)
           : []
-      updateLesson({ variables: { id: lessonId, input: { activties } } })
+      updateLesson({ variables: { id: lessonId, input: { activities } } })
       cache.writeQuery({
         query: GET_ACTIVITIES,
         variables: { id: lessonId },
