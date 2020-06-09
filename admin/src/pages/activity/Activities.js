@@ -77,8 +77,8 @@ export default function Activities(props) {
           : [activity]
       }
       const activities =
-        lesson && lesson.lessons
-          ? lesson.activties.map(dataActivity => dataActivity.id)
+        lesson && lesson.activities
+          ? lesson.activities.map(dataActivity => dataActivity.id)
           : []
       updateLesson({ variables: { id: lessonId, input: { activities } } })
       cache.writeQuery({
