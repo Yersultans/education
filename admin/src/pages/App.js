@@ -88,7 +88,6 @@ function App() {
 
   const authContext = { currentUser, updateCurrentUser }
   const messagesContext = { displayMessage }
-  console.log('environment variables', process.env)
 
   return (
     <div className="App">
