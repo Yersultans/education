@@ -1,7 +1,6 @@
 const mongoose = require('mongoose')
 
 const User = mongoose.model('User')
-const { BadgeUp, modifierType } = require('../services/BadgeUp')
 const { validationResult } = require('express-validator/check')
 
 const generateUserName = async username => {
@@ -162,9 +161,6 @@ module.exports.setPassword = async (req, res) => {
 module.exports.socialAchievements = async (req, res) => {
   try {
     const { userId, socialType } = req.body
-    await BadgeUp.createEvent(userId, socialType, {
-      [modifierType.increment]: 1
-    })
     res.status(200).send('Badge added successfully!')
   } catch (err) {
     console.log(err)

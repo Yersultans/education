@@ -5,8 +5,6 @@ const passport = require('passport')
 const jwt = require('jsonwebtoken')
 const groupHelpers = require('../helpers/group')
 
-const { BadgeUp, modifierType } = require('../services/BadgeUp')
-
 const config = require('../config')
 
 const redirect = ({ request, response, path }) => {
@@ -66,9 +64,6 @@ module.exports.loginAdmin = async (req, res) => {
 
 module.exports.currentUser = async (req, res) => {
   if (!req.user) return res.status(401).send(null)
-  BadgeUp.createEvent(req.user._id, 'active', {
-    [modifierType.increment]: 1
-  })
   const currentUser = groupHelpers.getCurrentUser({ request: req })
   return res.send(currentUser)
 }
