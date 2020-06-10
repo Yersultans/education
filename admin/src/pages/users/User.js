@@ -8,8 +8,6 @@ import {
   updateUserPassword,
   giveUserSocialBadge
 } from '../../actions/users'
-import { fetchChapters } from '../../actions/chapters'
-import { fetchSchoolsList } from '../../actions/schools'
 
 const { Option } = Select
 

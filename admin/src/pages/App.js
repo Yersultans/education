@@ -5,7 +5,6 @@ import { useLazyQuery, gql, useMutation } from '@apollo/client'
 import { Layout, message } from 'antd'
 import './App.css'
 import Header from '../components/Header'
-import Menu from '../components/Menu'
 import Login from './auth/Login'
 import Register from './auth/Register'
 
@@ -96,8 +95,6 @@ function App() {
           <BrowserRouter>
             <Layout>
               <Header logout={logout} />
-
-              {/* <Menu logout={logout} /> */}
               {currentUser &&
                 (currentUser.role === 'admin' ||
                   currentUser.role === 'contentManager') && (
@@ -128,7 +125,7 @@ function App() {
 }
 
 const EnhancedApp = withHelmet([
-  { tag: 'title', content: 'Admin | Saturday Kids' }
+  { tag: 'title', content: 'Admin | Education' }
 ])(App)
 
 export default EnhancedApp

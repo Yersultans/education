@@ -7,7 +7,6 @@ import styled from 'styled-components'
 import showConfirm from '../../components/DeleteFromTableFunc'
 import CreateForm from '../../components/CreateForm'
 import DefaultStyledContainer from '../../components/DefaultStyledContainer'
-import ImportStudents from '../../components/ImportStudents'
 import { fetchUsers, createUser, deleteUser } from '../../actions/users'
 
 import randomInRange from '../../utils'
@@ -36,10 +35,7 @@ const CustomFilterDropdown = styled.div`
 class Users extends Component {
   state = {
     modalVisible: false,
-    importModalVisible: false,
     searchText: { userName: '', name: '' },
-    failedEmails: [],
-    isFinishedImport: false,
     pagination: {},
     loading: true
   }
@@ -119,38 +115,8 @@ class Users extends Component {
     this.setState({ modalVisible: true })
   }
 
-  showImportUsersModal = () => {
-    this.setState({ importModalVisible: true })
-  }
-
   handleCancel = () => {
-    this.setState({ modalVisible: false, importModalVisible: false })
-  }
-
-  handleCreateStudents = async students => {
-    try {
-      const failedEmails = []
-      const newData = await Promise.all(
-        students.map(
-          item =>
-            new Promise(resolve => {
-              this.props.createUser(item).then(data => {
-                if (data) {
-                  return resolve(data.username)
-                }
-                failedEmails.push(item.parentEmail)
-                return resolve(null)
-              })
-            })
-        )
-      )
-      this.setState({ failedEmails, isFinishedImport: true })
-      return newData
-    } catch (err) {
-      /* eslint-disable-next-line */
-      console.log('err: ', err)
-    }
-    return null
+    this.setState({ modalVisible: false })
   }
 
   handleCreate = async () => {
@@ -320,12 +286,6 @@ class Users extends Component {
           title={() => (
             <div>
               <Button onClick={this.showModal}>Add new User</Button>
-              <Button
-                onClick={this.showImportUsersModal}
-                style={{ marginLeft: '8px' }}
-              >
-                Import from CSV
-              </Button>
             </div>
           )}
         />
@@ -338,14 +298,6 @@ class Users extends Component {
           onCreate={this.handleCreate}
           fields={this.handleFields()}
           dataToDisplay={this.state.newUserData}
-        />
-        <ImportStudents
-          title="Import students"
-          visible={this.state.importModalVisible}
-          onCancel={this.handleCancel}
-          onOk={this.handleCreateStudents}
-          failedEmails={this.state.failedEmails}
-          isFinishedImport={this.state.isFinishedImport}
         />
       </DefaultStyledContainer>
     )

@@ -16,7 +16,7 @@ class ImageUpload extends Component {
     const uploadProps = {
       accept: 'image/*',
       name: 'file',
-      action: 'https://api.cloudinary.com/v1_1/wundereducation/image/upload',
+      action: 'https://api.cloudinary.com/v1_1/do3tusxzw/image/upload',
       data: {
         upload_preset: 'f5g6r5cq'
       }
