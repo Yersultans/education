@@ -36,7 +36,7 @@
     "@babel/preset-env": "^7.0.0",
     "@babel/runtime": "^7.3.1",
     "@badgeup/badgeup-node-client": "^2.0.3",
-    "airtable": "^0.5.10",
+    "airtable": "^0.9.0",
     "apollo-server-express": "^2.9.13",
     "aws-sdk": "^2.456.0",
     "babel-plugin-module-resolver": "^3.1.1",
