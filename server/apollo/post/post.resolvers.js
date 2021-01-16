@@ -1,11 +1,13 @@
+const fields = '_id name content imageUrl user messages updatedAt created_at'
+
 module.exports = {
   Query: {
     async posts(_, args, ctx) {
-      const posts = await ctx.models.Post.find({}, 'id')
+      const posts = await ctx.models.Post.find({}, fields)
       return posts
     },
     async post(_, args, ctx) {
-      const post = await ctx.models.Post.findById(args.id, 'id').exec()
+      const post = await ctx.models.Post.findById(args.id, fields).exec()
       if (!post) {
         throw new Error('Post does not exist')
       }
@@ -14,52 +16,47 @@ module.exports = {
   },
   Mutation: {
     async addPost(_, { input }, ctx) {
-      const post = new ctx.models.Post(input)
-      await post.save()
-      return post
+      const item = new ctx.models.Post(input)
+      await item.save()
+      return item
     },
     async updatePost(_, { id, input }, ctx) {
-      const post = await ctx.models.Post.findOneAndUpdate({ _id: id }, input, {
+      const item = await ctx.models.Post.findOneAndUpdate({ _id: id }, input, {
         new: true
       }).exec()
-      return post
+      if (!item) {
+        throw new Error('Post not found')
+      }
+      return item
     },
     async deletePost(_, { id }, ctx) {
-      await ctx.models.Post.findByIdAndRemove(id).exec()
+      const result = await ctx.models.Post.deleteOne({ _id: id })
+
+      if (result.deletedCount !== 1) {
+        throw new Error('Post not deleted')
+      }
+
       return id
     }
   },
   Post: {
-    id(Post) {
-      return `${Post._id}`
+    id(post) {
+      return `${post._id}`
     },
-    async name(Post, _, ctx) {
-      const item = await ctx.models.Post.findById(Post._id, 'name')
-      return item.name
+    async user(post, _, ctx) {
+      const userId = post.user
+      if (userId) {
+        const user = await ctx.loaders.userLoader.load(userId)
+        return user
+      }
+      return null
     },
-    async content(Post, _, ctx) {
-      const item = await ctx.models.Post.findById(Post._id, 'content')
-      return item.content
-    },
-    async imageUrl(Post, _, ctx) {
-      const item = await ctx.models.Post.findById(Post._id, 'imageUrl')
-      return item.imageUrl
-    },
-    async user(Post, _, ctx) {
-      const item = await ctx.models.Post.findById(Post._id, 'user')
-      return item.user
-    },
-    async messages(Post, _, ctx) {
-      const item = await ctx.models.Post.findById(Post._id, 'messages')
-      return item.messages
-    },
-    async createdAt(Post, _, ctx) {
-      const item = await ctx.models.Post.findById(Post._id, 'created_at')
-      return item.created_at
-    },
-    async updatedAt(Post, _, ctx) {
-      const item = await ctx.models.Post.findById(Post._id, 'updatedAt')
-      return item.updatedAt
+    async messages(post, _, ctx) {
+      if (!post.messages) return []
+      const messages = await ctx.loaders.fromMessageLoader.loadMany(
+        post.messages.filter(message => message != null)
+      )
+      return messages
     }
   }
 }

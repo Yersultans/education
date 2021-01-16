@@ -4,7 +4,7 @@ type Form {
   description: String
   user: User
   messages: [FormMessage]
-  createdAt: DateTime
+  created_at: DateTime
   updatedAt: DateTime
 }
 

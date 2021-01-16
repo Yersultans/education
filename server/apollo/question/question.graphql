@@ -8,6 +8,8 @@ type Question {
   subject: Subject
   lesson: Lesson
   activity: Activity
+  correctAnswerVideo: String
+  correctAnswerImg: String
 }
 
 input QuestionInput {
@@ -19,6 +21,8 @@ input QuestionInput {
   subject: ID
   lesson: ID
   activity: ID
+  correctAnswerVideo: String
+  correctAnswerImg: String
 }
 
 input QuestionFilterInput {

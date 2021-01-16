@@ -12,6 +12,8 @@ const QuestionSchema = new Schema({
     enum: ['kazakh', 'russian'],
     default: 'kazakh'
   },
+  correctAnswerImg: String,
+  correctAnswerVideo: String,
   subject: { type: Schema.Types.ObjectId, ref: 'Subject' },
   lesson: { type: Schema.Types.ObjectId, ref: 'Lesson' },
   activity: { type: Schema.Types.ObjectId, ref: 'Activity' }

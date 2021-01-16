@@ -13,6 +13,7 @@ import progress from './progress'
 import history from './history'
 
 import gqlLoader from './gqlLoader'
+import formMessageModel from './formMessage/formMessage.model'
 
 const { GraphQLScalarType } = require('graphql')
 
@@ -64,6 +65,17 @@ const gqlServerConfig = {
     return {
       user: req.user,
       logout: req.logout,
+      loaders: {
+        activityLoader: activity.loader,
+        formLoader: form.loader,
+        formMessageLoader: formMessage.loader,
+        historyLoader: history.loader,
+        lessonLoader: lesson.loader,
+        postLoader: post.loader,
+        progressLoader: progress.loader,
+        questionLoader: question.loader,
+        subjectLoader: subject.loader
+      },
       models: {
         User: user.model,
         Question: question.model,

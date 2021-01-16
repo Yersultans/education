@@ -1,11 +1,17 @@
+const fields =
+  '_id text options level correctAnswers language question subject lesson activity correctAnswerVideo correctAnswerImg'
+
 module.exports = {
   Query: {
     async questions(_, args, ctx) {
-      const questions = await ctx.models.Question.find({}, 'id')
+      const questions = await ctx.models.Question.find({}, fields)
       return questions
     },
     async question(_, args, ctx) {
-      const question = await ctx.models.Question.findById(args.id, 'id').exec()
+      const question = await ctx.models.Question.findById(
+        args.id,
+        fields
+      ).exec()
       if (!question) {
         throw new Error('Question does not exist')
       }
@@ -18,63 +24,57 @@ module.exports = {
   },
   Mutation: {
     async addQuestion(_, { input }, ctx) {
-      const question = new ctx.models.Question(input)
-      await question.save()
-      return question
+      const item = new ctx.models.Question(input)
+      await item.save()
+      return item
     },
     async updateQuestion(_, { id, input }, ctx) {
-      const question = await ctx.models.Question.findOneAndUpdate(
+      const item = await ctx.models.Question.findOneAndUpdate(
         { _id: id },
         input,
         {
           new: true
         }
       ).exec()
-      return question
+      return item
     },
     async deleteQuestion(_, { id }, ctx) {
-      await ctx.models.Question.findByIdAndRemove(id).exec()
+      const result = await ctx.models.Question.deleteOne({ _id: id })
+
+      if (result.deletedCount !== 1) {
+        throw new Error('Question not deleted')
+      }
+
       return id
     }
   },
   Question: {
-    id(Question) {
-      return `${Question._id}`
+    id(question) {
+      return `${question._id}`
     },
-    async text(Question, _, ctx) {
-      const item = await ctx.models.Question.findById(Question._id, 'text')
-      return item.text
+    async subject(question, _, ctx) {
+      const subjectId = question.subject
+      if (subjectId) {
+        const subject = await ctx.loaders.subjectLoader.load(subjectId)
+        return subject
+      }
+      return null
     },
-    async level(Question, _, ctx) {
-      const item = await ctx.models.Question.findById(Question._id, 'level')
-      return item.level
+    async lesson(question, _, ctx) {
+      const lessonId = question.lesson
+      if (lessonId) {
+        const lesson = await ctx.loaders.lessonLoader.load(lessonId)
+        return lesson
+      }
+      return null
     },
-    async options(Question, _, ctx) {
-      const item = await ctx.models.Question.findById(Question._id, 'options')
-      return item.options
-    },
-    async correctAnswers(Question, _, ctx) {
-      const item = await ctx.models.Question.findById(
-        Question._id,
-        'correctAnswers'
-      )
-      return item.correctAnswers
-    },
-    async language(Question, _, ctx) {
-      const item = await ctx.models.Question.findById(Question._id, 'language')
-      return item.language
-    },
-    async subject(Question, _, ctx) {
-      const item = await ctx.models.Question.findById(Question._id, 'subject')
-      return item.subject
-    },
-    async lesson(Question, _, ctx) {
-      const item = await ctx.models.Question.findById(Question._id, 'lesson')
-      return item.lesson
-    },
-    async activity(Question, _, ctx) {
-      const item = await ctx.models.Question.findById(Question._id, 'activity')
-      return item.activity
+    async activity(question, _, ctx) {
+      const activityId = question.activity
+      if (activityId) {
+        const activity = await ctx.loaders.activityLoader.load(activityId)
+        return activity
+      }
+      return null
     }
   }
 }

@@ -1,3 +1,5 @@
+import { ApolloError } from 'apollo-server-express'
+
 module.exports = {
   Query: {
     async users(_, args, ctx) {
@@ -20,11 +22,18 @@ module.exports = {
     async addUser(_, { input }, ctx) {
       try {
         const { User } = ctx.models
-        const { username, password, ...userProps } = input
+        const { password } = input
+        delete input.password
         const user = await User.register(new User(input), password)
         return user
       } catch (err) {
-        throw new Error(err)
+        if (err) {
+          if (err.name === 'MongoError' && err.code === 11000) {
+            // duplicate username or email
+            throw new ApolloError('User already exists')
+          }
+          throw new ApolloError(err)
+        }
       }
     },
     async updateUser(_, { id, input }, ctx) {

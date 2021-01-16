@@ -1,11 +1,13 @@
+const fields = '_id user questions correctAnswers total updatedAt created_at'
+
 module.exports = {
   Query: {
     async histories(_, args, ctx) {
-      const histories = await ctx.models.History.find({}, 'id')
+      const histories = await ctx.models.History.find({}, fields)
       return histories
     },
     async history(_, args, ctx) {
-      const history = await ctx.models.History.findById(args.id, 'id').exec()
+      const history = await ctx.models.History.findById(args.id, fields).exec()
       if (!history) {
         throw new Error('History does not exist')
       }
@@ -34,40 +36,33 @@ module.exports = {
       return history
     },
     async deleteHistory(_, { id }, ctx) {
-      await ctx.models.History.findByIdAndRemove(id).exec()
+      const result = await ctx.models.History.deleteOne({ _id: id })
+
+      if (result.deletedCount !== 1) {
+        throw new Error('History not deleted')
+      }
+
       return id
     }
   },
   History: {
-    id(History) {
-      return `${History._id}`
+    id(history) {
+      return `${history._id}`
     },
-    async user(History, _, ctx) {
-      const item = await ctx.models.History.findById(History._id, 'user')
-      return item.user
+    async user(history, _, ctx) {
+      const userId = history.user
+      if (userId) {
+        const user = await ctx.loaders.userLoader.load(userId)
+        return user
+      }
+      return null
     },
-    async questions(History, _, ctx) {
-      const item = await ctx.models.History.findById(History._id, 'questions')
-      return item.questions
-    },
-    async correctAnswers(History, _, ctx) {
-      const item = await ctx.models.History.findById(
-        History._id,
-        'correctAnswers'
+    async questions(history, _, ctx) {
+      if (!history.questions) return []
+      const questions = await ctx.loaders.historyLoader.loadMany(
+        history.questions.filter(question => question != null)
       )
-      return item.correctAnswers
-    },
-    async total(History, _, ctx) {
-      const item = await ctx.models.History.findById(History._id, 'total')
-      return item.total
-    },
-    async createdAt(History, _, ctx) {
-      const item = await ctx.models.History.findById(History._id, 'created_at')
-      return item.created_at
-    },
-    async updatedAt(History, _, ctx) {
-      const item = await ctx.models.History.findById(History._id, 'updatedAt')
-      return item.updatdeAt
+      return questions
     }
   }
 }

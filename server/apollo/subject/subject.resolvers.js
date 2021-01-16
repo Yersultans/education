@@ -1,13 +1,15 @@
+const fields = '_id name imageUrl language lessons'
+
 module.exports = {
   Query: {
     async subjects(_, args, ctx) {
-      const subjects = await ctx.models.Subject.find({}, 'id')
+      const subjects = await ctx.models.Subject.find({}, fields)
       return subjects
     },
     async subject(_, args, ctx) {
-      const subject = await ctx.models.Subject.findById(args.id, 'id').exec()
+      const subject = await ctx.models.Subject.findById(args.id, fields).exec()
       if (!subject) {
-        throw new Error('Lesson does not exist')
+        throw new Error('Subject does not exist')
       }
       return subject
     },
@@ -18,42 +20,40 @@ module.exports = {
   },
   Mutation: {
     async addSubject(_, { input }, ctx) {
-      const subject = new ctx.models.Subject(input)
-      await subject.save()
-      return subject
+      const item = new ctx.models.Subject(input)
+      await item.save()
+      return item
     },
     async updateSubject(_, { id, input }, ctx) {
-      const subject = await ctx.models.Subject.findOneAndUpdate(
+      const item = await ctx.models.Subject.findOneAndUpdate(
         { _id: id },
         input,
-        { new: true }
+        {
+          new: true
+        }
       ).exec()
-      return subject
+      return item
     },
     async deleteSubject(_, { id }, ctx) {
-      await ctx.models.Subject.findByIdAndRemove(id).exec()
+      const result = await ctx.models.Question.deleteOne({ _id: id })
+
+      if (result.deletedCount !== 1) {
+        throw new Error('Subject not deleted')
+      }
+
       return id
     }
   },
   Subject: {
-    id(Subject) {
-      return `${Subject._id}`
+    id(subject) {
+      return `${subject._id}`
     },
-    async name(Subject, _, ctx) {
-      const item = await ctx.models.Subject.findById(Subject._id, 'name')
-      return item.name
-    },
-    async imageUrl(Subject, _, ctx) {
-      const item = await ctx.models.Subject.findById(Subject._id, 'imageUrl')
-      return item.imageUrl
-    },
-    async language(Subject, _, ctx) {
-      const item = await ctx.models.Subject.findById(Subject._id, 'language')
-      return item.language
-    },
-    async lessons(Subject, _, ctx) {
-      const item = await ctx.models.Subject.findById(Subject._id, 'lessons')
-      return item.lessons
+    async lessons(subject, _, ctx) {
+      if (!subject.lessons) return []
+      const lessons = await ctx.loaders.lessonLoader.loadMany(
+        subject.lessons.filter(lesson => lesson != null)
+      )
+      return lessons
     }
   }
 }

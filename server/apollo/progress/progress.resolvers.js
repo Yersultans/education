@@ -1,11 +1,17 @@
+const fields =
+  '_id user question subject lesson userAnswers isCorrect created_at updateAt'
+
 module.exports = {
   Query: {
     async progresses(_, args, ctx) {
-      const progresses = await ctx.models.Progress.find({}, 'id')
+      const progresses = await ctx.models.Progress.find({}, fields)
       return progresses
     },
     async progress(_, args, ctx) {
-      const progress = await ctx.models.Progress.findById(args.id, 'id').exec()
+      const progress = await ctx.models.Progress.findById(
+        args.id,
+        fields
+      ).exec()
       if (!progress) {
         throw new Error('Progress does not exist')
       }
@@ -17,7 +23,7 @@ module.exports = {
           user: args.id,
           isCorrect: true
         },
-        'id'
+        fields
       )
       const wrong = await ctx.models.Progress.find(
         {
@@ -32,45 +38,55 @@ module.exports = {
   },
   Mutation: {
     async addProgress(_, { input }, ctx) {
-      const progress = new ctx.models.Progress(input)
-      await progress.save()
-      return progress
+      const item = new ctx.models.Progress(input)
+      await item.save()
+      return item
     },
     async deleteProgress(_, { id }, ctx) {
-      await ctx.models.Progress.findByIdAndRemove(id).exec()
+      const result = await ctx.models.Progress.deleteOne({ _id: id })
+
+      if (result.deletedCount !== 1) {
+        throw new Error('Progress not deleted')
+      }
+
       return id
     }
   },
   Progress: {
-    id(Progress) {
-      return `${Progress._id}`
+    id(progress) {
+      return `${progress._id}`
     },
-    async user(Progress, _, ctx) {
-      const item = await ctx.models.Progress.findById(Progress._id, 'user')
-      return item.user
+    async user(progress, _, ctx) {
+      const userId = progress.user
+      if (userId) {
+        const user = await ctx.loaders.userLoader.load(userId)
+        return user
+      }
+      return null
     },
-    async question(Progress, _, ctx) {
-      const item = await ctx.models.Progress.findById(Progress._id, 'question')
-      return item.question
+    async question(progress, _, ctx) {
+      const questionId = progress.question
+      if (questionId) {
+        const question = await ctx.loaders.questionLoader.load(questionId)
+        return question
+      }
+      return null
     },
-    async subject(Progress, _, ctx) {
-      const item = await ctx.models.Progress.findById(Progress._id, 'subject')
-      return item.subject
+    async subject(progress, _, ctx) {
+      const subjectId = progress.subject
+      if (subjectId) {
+        const subject = await ctx.loaders.subjectLoader.load(subjectId)
+        return subject
+      }
+      return null
     },
-    async lesson(Progress, _, ctx) {
-      const item = await ctx.models.Progress.findById(Progress._id, 'lesson')
-      return item.lesson
-    },
-    async userAnswers(Progress, _, ctx) {
-      const item = await ctx.models.Progress.findById(
-        Progress._id,
-        'userAnswers'
-      )
-      return item.userAnswers
-    },
-    async isCorrect(Progress, _, ctx) {
-      const item = await ctx.models.Progress.findById(Progress._id, 'isCorrect')
-      return item.isCorrect
+    async lesson(progress, _, ctx) {
+      const lessonId = progress.lesson
+      if (lessonId) {
+        const lesson = await ctx.loaders.lessonLoader.load(lessonId)
+        return lesson
+      }
+      return null
     }
   }
 }

@@ -1,13 +1,15 @@
+const fields = '_id content user messages post form updatedAt created_at'
+
 module.exports = {
   Query: {
     async formMessages(_, args, ctx) {
-      const formMessages = await ctx.models.FormMessage.find({}, 'id')
+      const formMessages = await ctx.models.FormMessage.find({}, fields)
       return formMessages
     },
     async formMessage(_, args, ctx) {
       const formMessage = await ctx.models.FormMessage.findById(
         args.id,
-        'id'
+        fields
       ).exec()
       if (!formMessage) {
         throw new Error('FormMessage does not exist')
@@ -17,77 +19,67 @@ module.exports = {
   },
   Mutation: {
     async addFormMessage(_, { input }, ctx) {
-      const form = new ctx.models.FormMessage(input)
-      await form.save()
-      return form
+      const item = new ctx.models.FormMessage(input)
+      await item.save()
+      return item
     },
     async updateFormMessage(_, { id, input }, ctx) {
-      const formMessage = await ctx.models.FormMessage.findOneAndUpdate(
+      const item = await ctx.models.FormMessage.findOneAndUpdate(
         { _id: id },
         input,
         {
           new: true
         }
       ).exec()
-      return formMessage
+      if (!item) {
+        throw new Error('FormMessage not found')
+      }
+      return item
     },
     async deleteFormMessage(_, { id }, ctx) {
-      await ctx.models.FormMessage.findByIdAndRemove(id).exec()
+      const result = await ctx.models.FormMessage.deleteOne({ _id: id })
+
+      if (result.deletedCount !== 1) {
+        throw new Error('FormMessage not deleted')
+      }
+
       return id
     }
   },
   FormMessage: {
-    id(FormMessage) {
-      return `${FormMessage._id}`
+    id(formMessage) {
+      return `${formMessage._id}`
     },
-    async user(FormMessage, _, ctx) {
-      const item = await ctx.models.FormMessage.findById(
-        FormMessage._id,
-        'user'
-      )
-      return item.user
+    async user(formMessage, _, ctx) {
+      const userId = formMessage.user
+      if (userId) {
+        const user = await ctx.loaders.userLoader.load(userId)
+        return user
+      }
+      return null
     },
-    async content(FormMessage, _, ctx) {
-      const item = await ctx.models.FormMessage.findById(
-        FormMessage._id,
-        'content'
+    async messages(formMessage, _, ctx) {
+      if (!formMessage.messages) return []
+      const messages = await ctx.loaders.formMessageLoader.loadMany(
+        formMessage.messages.filter(message => message != null)
       )
-      return item.content
+      return messages
     },
-    async messages(FormMessage, _, ctx) {
-      const item = await ctx.models.FormMessage.findById(
-        FormMessage._id,
-        'messages'
-      )
-      return item.messages
+    async post(formMessage, _, ctx) {
+      const postId = formMessage.post
+      if (postId) {
+        const post = await ctx.loaders.postLoader.load(postId)
+        return post
+      }
+      return null
     },
-    async createdAt(FormMessage, _, ctx) {
-      const item = await ctx.models.FormMessage.findById(
-        FormMessage._id,
-        'created_at'
-      )
-      return item.created_at
-    },
-    async updatedAt(FormMessage, _, ctx) {
-      const item = await ctx.models.FormMessage.findById(
-        FormMessage._id,
-        'updatedAt'
-      )
-      return item.updatedAt
-    },
-    async post(FormMessage, _, ctx) {
-      const item = await ctx.models.FormMessage.findById(
-        FormMessage._id,
-        'post'
-      )
-      return item.post
-    },
-    async form(FormMessage, _, ctx) {
-      const item = await ctx.models.FormMessage.findById(
-        FormMessage._id,
-        'form'
-      )
-      return item.form
+    async form(formMessage, _, ctx) {
+      const formId = formMessage.post
+      if (formId) {
+        const form = await ctx.loaders.formLoader.load(formId)
+        return form
+      }
+      return null
     }
   }
 }

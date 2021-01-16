@@ -4,7 +4,7 @@ type History {
   questions: [Progress]
   correctAnswers: Int
   total: Int
-  createdAt: DateTime
+  created_at: DateTime
   updatedAt: DateTime
 }
 
