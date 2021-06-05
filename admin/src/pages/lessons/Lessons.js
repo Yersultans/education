@@ -3,7 +3,7 @@ import { useQuery, useMutation, gql } from '@apollo/client'
 import { Link } from 'react-router-dom'
 import { Table, Button, Divider, Modal, Spin } from 'antd'
 
-import CreateForm from '../../components/CreateForm'
+// import CreateForm from '../../components/CreateForm'
 import DefaultStyledContainer from '../../components/DefaultStyledContainer'
 import showConfirm from '../../components/DeleteFromTableFunc'
 import Lesson from './Lesson'
@@ -251,14 +251,14 @@ export default function Lessons(props) {
         )}
       />
 
-      <CreateForm
+      {/* <CreateForm
         title="Добавить новый Урок"
         ref={saveFormRef}
         visible={modalVisible}
         onCancel={handleCancel}
         onCreate={handleCreate}
         fields={handleFields()}
-      />
+      /> */}
       {editingLesson && (
         <Modal
           visible={editModalVisible}

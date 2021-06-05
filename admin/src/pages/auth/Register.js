@@ -1,8 +1,9 @@
 import React, { useContext, useEffect } from 'react'
 import PropTypes from 'prop-types'
-import { Form, Input, Button, Icon, Row, Col } from 'antd'
+import { Form, Input, Button, Row, Col } from 'antd'
 import { withRouter } from 'react-router-dom'
 import { useMutation, gql } from '@apollo/client'
+import { UserOutlined, LockOutlined } from '@ant-design/icons'
 
 import MessagesContext from '../../context/MessagesContext'
 
@@ -59,9 +60,7 @@ function Register(props) {
               ]
             })(
               <Input
-                prefix={
-                  <Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />
-                }
+                prefix={<UserOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
                 placeholder="Username"
               />
             )}
@@ -71,9 +70,7 @@ function Register(props) {
               rules: [{ required: true, message: 'Пожалуйста введите пароль!' }]
             })(
               <Input
-                prefix={
-                  <Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />
-                }
+                prefix={<LockOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
                 type="password"
                 placeholder="Пароль"
               />

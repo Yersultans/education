@@ -1,5 +1,4 @@
 import React from 'react'
-import './highlight'
 // eslint-disable-next-line import/first
 import ReactQuill from 'react-quill'
 // eslint-disable-next-line import/first

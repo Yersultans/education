@@ -2,6 +2,8 @@ import React, { useState, useCallback } from 'react'
 import { useQuery, useMutation, gql } from '@apollo/client'
 import { Button, Divider, Table, Spin } from 'antd'
 import { Link } from 'react-router-dom'
+
+import withMainLayout from '../../hocs/withMainLayout'
 import DefaultStyledContainer from '../../components/DefaultStyledContainer'
 import showConfirm from '../../components/DeleteFromTableFunc'
 
@@ -30,7 +32,7 @@ const DELETE_QUESTION = gql`
   }
 `
 
-export default function Questions() {
+const Questions = () => {
   const { data, loading, error } = useQuery(GET_DATA)
 
   const [deleteQuestion] = useMutation(DELETE_QUESTION, {
@@ -112,3 +114,5 @@ export default function Questions() {
     </DefaultStyledContainer>
   )
 }
+
+export default withMainLayout(Questions)

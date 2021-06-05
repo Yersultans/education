@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { useQuery, useMutation, gql } from '@apollo/client'
-import EditComponent from '../../components/EditComponent'
+// import EditComponent from '../../components/EditComponent'
 import { Spin } from 'antd'
 
 import DefaultStyledContainer from '../../components/DefaultStyledContainer'
@@ -75,7 +75,7 @@ export default function Post(props) {
 
   return (
     <DefaultStyledContainer>
-      <EditComponent fields={fields} onUpdateClick={handleUpdateClick} />
+      {/* <EditComponent fields={fields} onUpdateClick={handleUpdateClick} /> */}
     </DefaultStyledContainer>
   )
 }

@@ -45,6 +45,7 @@ module.exports = {
     },
     async user(post, _, ctx) {
       const userId = post.user
+      console.log('userId', userId)
       if (userId) {
         const user = await ctx.loaders.userLoader.load(userId)
         return user

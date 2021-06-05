@@ -3,7 +3,6 @@ import axios from 'axios'
 import { pushMessage, pushError } from './messages'
 import displayError from './errorHelper'
 import randomInRange from '../utils'
-import LocalStorageUtils from '../utils/LocalStorageUtils'
 
 import {
   FETCH_USERS,
@@ -16,7 +15,7 @@ import {
 axios.interceptors.request.use(
   config => {
     // Do something before request is sent
-    const token = LocalStorageUtils.get('token')
+    const token = localStorage.get('token')
     const headers = {
       Authorization: `Bearer ${token}`,
       ...config.headers

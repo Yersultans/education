@@ -1,131 +1,81 @@
-/* eslint-disable react/no-unused-state */
-import React, { useState, useEffect } from 'react'
+import React from 'react'
+import 'react-toastify/dist/ReactToastify.css'
 import { BrowserRouter, Route } from 'react-router-dom'
-import { useLazyQuery, gql, useMutation } from '@apollo/client'
-import { Layout, message } from 'antd'
-import './App.css'
-import Header from '../components/Header'
-import Login from './auth/Login'
-import Register from './auth/Register'
+import {
+  ApolloClient,
+  HttpLink,
+  InMemoryCache,
+  ApolloProvider,
+  ApolloLink,
+  concat
+} from '@apollo/client'
+import { ToastContainer } from 'react-toastify'
 
-import User from './users/User'
-import Users from './users/Users'
+import './App.css'
+import Login from './auth/Login'
+// import User from './users/User'
+// import Users from './users/Users'
 import Subject from './subjects/Subject'
 import Subjects from './subjects/Subjects'
 import Posts from './post/Posts'
 import Post from './post/Post'
-
-import withHelmet from '../hocs/withHelmet'
-import AuthContext from '../context/AuthContext'
-import MessagesContext from '../context/MessagesContext'
-import LocalStorageUtils from '../utils/LocalStorageUtils'
 import Questions from './questions/questions'
 import AddQuestion from './questions/addQuestion'
 import Question from './questions/question'
 
-const GET_CURRENT_USER = gql`
-  query getCurrentUser {
-    getCurrentUser {
-      id
-      username
-      role
-    }
-  }
-`
+import withHelmet from '../hocs/withHelmet'
+import { ProvideAuth } from '../context/useAuth'
+import { ProvideLoading } from '../context/useLoading'
+import LoadingDialog from '../context/LoadingDialog'
+import PrivateRoute from '../hocs/PrivateRoute'
 
-const LOGOUT = gql`
-  mutation logout {
-    logout {
-      message
+const httpLink = new HttpLink({
+  uri: process.env.REACT_APP_GRAPHQL_URL
+})
+
+const authMiddleware = new ApolloLink((operation, forward) => {
+  // add the authorization to the headers
+  operation.setContext({
+    headers: {
+      authorization: localStorage.getItem('token')
+        ? `Bearer ${localStorage.getItem('token')}`
+        : null
     }
-  }
-`
+  })
+
+  return forward(operation)
+})
+
+const apolloClient = new ApolloClient({
+  cache: new InMemoryCache(),
+  link: concat(authMiddleware, httpLink)
+})
 
 function App() {
-  const [messages, setMessages] = useState([])
-  const [currentUser, setStateUser] = useState(null)
-  const [updateStateUser, setUpdateStateUser] = useState(0)
-  const [getCurrentUser, { data, loading, error }] = useLazyQuery(
-    GET_CURRENT_USER
-  )
-  const [sendLogout] = useMutation(LOGOUT)
-
-  const logout = () => {
-    LocalStorageUtils.remove('token')
-    sendLogout()
-    setStateUser(null)
-  }
-
-  useEffect(() => {
-    getCurrentUser()
-  }, [updateStateUser])
-
-  useEffect(() => {
-    if (messages.length > 0) {
-      if (messages[0].type === 'notify') {
-        message.success(messages[0].message, 1)
-      } else if (messages[0].type === 'error') {
-        message.error(messages[0].message, 2)
-      }
-      setMessages(messages.slice(1))
-    }
-  }, [messages])
-
-  useEffect(() => {
-    if (!loading && data && data.getCurrentUser) {
-      setStateUser(data.getCurrentUser)
-    }
-  }, [data, loading, error])
-
-  const updateCurrentUser = () => {
-    setUpdateStateUser(updateStateUser + 1)
-  }
-
-  const displayMessage = message => {
-    setMessages([...messages, message])
-  }
-
-  const authContext = { currentUser, updateCurrentUser }
-  const messagesContext = { displayMessage }
-
   return (
-    <div className="App">
-      <AuthContext.Provider value={authContext}>
-        <MessagesContext.Provider value={messagesContext}>
+    <ApolloProvider client={apolloClient}>
+      <ProvideAuth>
+        <ProvideLoading>
           <BrowserRouter>
-            <Layout>
-              <Header logout={logout} />
-              {currentUser &&
-                (currentUser.role === 'admin' ||
-                  currentUser.role === 'contentManager') && (
-                  <>
-                    <Route exact path="/questions" component={Questions} />
-                    <Route exact path="/questions/:id" component={Question} />
-                    <Route exact path="/addQuestion" component={AddQuestion} />
-                    <Route exact path="/subjects" component={Subjects} />
-                    <Route exact path="/subjects/:id" component={Subject} />
-                    <Route exact path="/posts" component={Posts} />
-                    <Route exact path="/posts/:id" component={Post} />
-                  </>
-                )}
-              {currentUser && currentUser.role === 'admin' && (
-                <>
-                  <Route exact path="/users" component={Users} />
-                  <Route exact path="/users/:id" component={User} />
-                </>
-              )}
-              <Route exact path="/login" component={Login} />
-              <Route exact path="/register" component={Register} />
-            </Layout>
+            <ToastContainer />
+            <LoadingDialog />
+            <Route exact path="/login" component={Login} />
+            <PrivateRoute exact path="/subjects" component={Subjects} />
+            <PrivateRoute exact path="/subjects/:id" component={Subject} />
+            <PrivateRoute exact path="/questions" component={Questions} />
+            <PrivateRoute exact path="/questions/:id" component={Question} />
+            <PrivateRoute exact path="/addQuestion" component={AddQuestion} />
+            <PrivateRoute exact path="/posts" component={Posts} />
+            <PrivateRoute exact path="/posts/:id" component={Post} />
           </BrowserRouter>
-        </MessagesContext.Provider>
-      </AuthContext.Provider>
-    </div>
+        </ProvideLoading>
+      </ProvideAuth>
+    </ApolloProvider>
   )
 }
 
-const EnhancedApp = withHelmet([
-  { tag: 'title', content: 'Admin | Education' }
-])(App)
+const EnhancedApp = withHelmet([{ tag: 'title', content: 'Admin | ProENT' }])(
+  App
+)
 
 export default EnhancedApp

@@ -24,6 +24,7 @@ module.exports = {
         const { User } = ctx.models
         const { password } = input
         delete input.password
+        console.log('input', input)
         const user = await User.register(new User(input), password)
         return user
       } catch (err) {

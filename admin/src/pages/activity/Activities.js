@@ -3,7 +3,7 @@ import { useQuery, useMutation, gql } from '@apollo/client'
 import { Link } from 'react-router-dom'
 import { Table, Button, Divider, Modal, Spin } from 'antd'
 
-import CreateForm from '../../components/CreateForm'
+// import CreateForm from '../../components/CreateForm'
 import DefaultStyledContainer from '../../components/DefaultStyledContainer'
 import showConfirm from '../../components/DeleteFromTableFunc'
 import Activity from './Activity'
@@ -249,14 +249,14 @@ export default function Activities(props) {
         )}
       />
 
-      <CreateForm
+      {/* <CreateForm
         title="Добавить новый Раздел"
         ref={saveFormRef}
         visible={modalVisible}
         onCancel={handleCancel}
         onCreate={handleCreate}
         fields={handleFields()}
-      />
+      /> */}
       {editingActivity && (
         <Modal
           visible={editModalVisible}

@@ -1,8 +1,10 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import { useQuery, useMutation, gql } from '@apollo/client'
-import EditComponent from '../../components/EditComponent'
-import { Tabs, Icon, Spin } from 'antd'
+import { Tabs, Spin } from 'antd'
+import { BookOutlined, ProjectOutlined } from '@ant-design/icons'
+
+// import EditComponent from '../../components/EditComponent'
 import Activities from '../activity/Activities'
 
 import DefaultStyledContainer from '../../components/DefaultStyledContainer'
@@ -116,19 +118,19 @@ export default function Lesson(props) {
         <TabPane
           tab={
             <span>
-              <Icon type="project" />
+              <ProjectOutlined />
               Урок
             </span>
           }
           key="1"
         >
-          <EditComponent fields={fields} onUpdateClick={handleUpdateClick} />
+          {/* <EditComponent fields={fields} onUpdateClick={handleUpdateClick} /> */}
         </TabPane>
         <TabPane
           key="2"
           tab={
             <span>
-              <Icon type="book" />
+              <BookOutlined />
               Разделы
             </span>
           }

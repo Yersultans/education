@@ -66,6 +66,7 @@ const gqlServerConfig = {
       user: req.user,
       logout: req.logout,
       loaders: {
+        userLoader: user.loader,
         activityLoader: activity.loader,
         formLoader: form.loader,
         formMessageLoader: formMessage.loader,

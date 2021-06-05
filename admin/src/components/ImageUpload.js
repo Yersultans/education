@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { Upload, message, Icon, Button } from 'antd'
+import { Upload, message, Button } from 'antd'
+import { UploadOutlined } from '@ant-design/icons'
 
 class ImageUpload extends Component {
   onChange = info => {
@@ -25,7 +26,7 @@ class ImageUpload extends Component {
     return (
       <Upload {...uploadProps} onChange={this.onChange}>
         <Button>
-          <Icon type="upload" /> Click to Upload
+          <UploadOutlined /> Click to Upload
         </Button>
       </Upload>
     )

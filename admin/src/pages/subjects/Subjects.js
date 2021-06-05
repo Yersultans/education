@@ -3,7 +3,8 @@ import { useQuery, useMutation, gql } from '@apollo/client'
 import { Link } from 'react-router-dom'
 import { Table, Button, Divider, Spin } from 'antd'
 
-import CreateForm from '../../components/CreateForm'
+// import CreateForm from '../../components/CreateForm'
+import withMainLayout from '../../hocs/withMainLayout'
 import DefaultStyledContainer from '../../components/DefaultStyledContainer'
 import showConfirm from '../../components/DeleteFromTableFunc'
 
@@ -33,7 +34,7 @@ const ADD_SUBJECT = gql`
   }
 `
 
-export default function Subjects() {
+const Subjects = () => {
   const [modalVisible, setModalVisible] = useState(false)
   const [formRef, setFormRef] = useState(null)
 
@@ -183,14 +184,15 @@ export default function Subjects() {
         )}
       />
 
-      <CreateForm
+      {/* <CreateForm
         title="Добавить новый Предмет"
         ref={saveFormRef}
         visible={modalVisible}
         onCancel={handleCancel}
         onCreate={handleCreate}
         fields={handleFields()}
-      />
+      /> */}
     </DefaultStyledContainer>
   )
 }
+export default withMainLayout(Subjects)

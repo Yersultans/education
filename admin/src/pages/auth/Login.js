@@ -1,14 +1,15 @@
-import React, { useContext, useEffect } from 'react'
-import PropTypes from 'prop-types'
-import { Row, Col, Form, Input, Button, Icon } from 'antd'
-import { withRouter } from 'react-router-dom'
+import React, { useState, useEffect } from 'react'
+import { Form, Input, Button, Checkbox } from 'antd'
+import { UserOutlined, LockOutlined } from '@ant-design/icons'
+import { useHistory } from 'react-router-dom'
 import { useMutation, gql } from '@apollo/client'
-import withHelmet from '../../hocs/withHelmet'
-import LocalStorageUtils from '../../utils/LocalStorageUtils'
-import AuthContext from '../../context/AuthContext'
-import MessagesContext from '../../context/MessagesContext'
+import { toast } from 'react-toastify'
+import styled from 'styled-components'
 
-const FormItem = Form.Item
+import withHelmet from '../../hocs/withHelmet'
+import withLoginLayout from '../../hocs/withLoginLayout'
+import { useAuth } from '../../context/useAuth'
+import { removeAnnoyingHeader } from '../../utils/apollo'
 
 const LOGIN = gql`
   mutation login($input: LoginUserInput) {
@@ -18,112 +19,108 @@ const LOGIN = gql`
   }
 `
 
-function Login(props) {
-  const [login, { data, error, loading }] = useMutation(LOGIN)
-  const { updateCurrentUser } = useContext(AuthContext)
-  const { displayMessage } = useContext(MessagesContext)
+const layout = {
+  labelCol: {
+    span: 8
+  },
+  wrapperCol: {
+    span: 16
+  }
+}
+const tailLayout = {
+  wrapperCol: {
+    offset: 8,
+    span: 16
+  }
+}
 
-  const handleSubmit = e => {
-    e.preventDefault()
-    props.form.validateFields((err, values) => {
-      if (!err) {
-        login({
-          variables: {
-            input: values
-          },
-          errorPolicy: 'all'
-        })
-      }
+const SubmitButton = styled(Button)`
+  width: 100%;
+`
+
+const russianText = {
+  login: 'Логин',
+  password: 'Пароль',
+  submit: 'Войти',
+  header: 'Вход в админ-панель'
+}
+
+const Login = () => {
+  const history = useHistory()
+  const [login, { data, error, loading }] = useMutation(LOGIN)
+  const { fetchUser } = useAuth()
+
+  const handleSubmit = values => {
+    const { username, password } = values
+    console.log('values', values)
+    login({
+      variables: {
+        input: { username, password }
+      },
+      errorPolicy: 'all'
     })
   }
 
-  console.log('data is ', data)
-  const { getFieldDecorator } = props.form
-
   useEffect(() => {
     if (!loading && error) {
-      displayMessage({ type: 'error', message: JSON.stringify(error.message) })
+      toast.error(removeAnnoyingHeader(error.message))
     } else if (data && data.loginAdmin && data.loginAdmin.token) {
-      LocalStorageUtils.save({
-        key: 'token',
-        value: `${data.loginAdmin.token}`
-      })
-      displayMessage({ type: 'notify', message: 'Вы успешно вошел в систему' })
-      updateCurrentUser()
-      props.history.push('/')
+      localStorage.setItem('token', `${data.loginAdmin.token}`)
+      toast.success('Successfully logged in')
+      fetchUser()
+      history.push('/levels')
     }
   }, [data, loading, error])
 
   return (
-    <div
-      style={{
-        minHeight: 'calc(100vh - 86px)',
-        width: '90%',
-        margin: 'auto',
-        marginTop: 20,
-        backgroundColor: 'transparent',
-        marginBottom: 20
-      }}
-    >
-      <Row type="flex" justify="center">
-        <Col span={6}>
-          <Form onSubmit={handleSubmit} className="login-form">
-            <FormItem>
-              {getFieldDecorator('username', {
-                rules: [
-                  { required: true, message: 'Пожалуйста введите username!' }
-                ]
-              })(
-                <Input
-                  prefix={
-                    <Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />
-                  }
-                  placeholder="Username"
-                />
-              )}
-            </FormItem>
-            <FormItem>
-              {getFieldDecorator('password', {
-                rules: [
-                  { required: true, message: 'Пожалуйста введите пароль!' }
-                ]
-              })(
-                <Input
-                  prefix={
-                    <Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />
-                  }
-                  type="password"
-                  placeholder="Пароль"
-                />
-              )}
-            </FormItem>
-            <FormItem>
-              <Button
-                type="primary"
-                htmlType="submit"
-                className="login-form-button"
-              >
-                Войти
-              </Button>
-              или <a href="/register">Создать аккаунт!</a>
-            </FormItem>
-          </Form>
-        </Col>
-      </Row>
-    </div>
+    <>
+      <h1> {russianText.header} </h1>
+      <Form
+        {...layout}
+        name="basic"
+        initialValues={{
+          remember: true
+        }}
+        onFinish={handleSubmit}
+      >
+        <Form.Item
+          label="Username"
+          name="username"
+          rules={[
+            {
+              required: true,
+              message: 'Please input your username!'
+            }
+          ]}
+        >
+          <Input placeholder={russianText.login} prefix={<UserOutlined />} />
+        </Form.Item>
+
+        <Form.Item
+          label="Password"
+          name="password"
+          rules={[
+            {
+              required: true,
+              message: 'Please input your password!'
+            }
+          ]}
+        >
+          <Input.Password
+            placeholder={russianText.password}
+            prefix={<LockOutlined />}
+          />
+        </Form.Item>
+        <Form.Item {...tailLayout}>
+          <SubmitButton type="primary" htmlType="submit" size="large">
+            {russianText.submit}
+          </SubmitButton>
+        </Form.Item>
+      </Form>
+    </>
   )
 }
 
-Login.propTypes = {
-  form: PropTypes.shape({
-    validateFields: PropTypes.func.isRequired,
-    getFieldDecorator: PropTypes.shape({}).isRequired
-  }).isRequired,
-  history: PropTypes.shape({
-    push: PropTypes.func.isRequired
-  }).isRequired
-}
-
-export default Form.create()(
-  withHelmet([{ tag: 'title', content: 'Login' }])(withRouter(Login))
+export default withHelmet([{ tag: 'title', content: 'Login' }])(
+  withLoginLayout(Login)
 )
