@@ -1,17 +1,11 @@
-const fields =
-  '_id user event station program status group identifier exercise created_at updated_at'
-
 module.exports = {
   Query: {
     async activities(_, args, ctx) {
-      const activities = await ctx.models.Activity.find({}, fields)
+      const activities = await ctx.models.Activity.find({})
       return activities
     },
     async activity(_, args, ctx) {
-      const activity = await ctx.models.Activity.findById(
-        args.id,
-        fields
-      ).exec()
+      const activity = await ctx.models.Activity.findById(args.id).exec()
       if (!activity) {
         throw new Error('Activity does not exist')
       }

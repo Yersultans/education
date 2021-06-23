@@ -12,6 +12,17 @@ const QuestionSchema = new Schema({
     enum: ['kazakh', 'russian'],
     default: 'kazakh'
   },
+  type: {
+    type: String,
+    enum: ['multipleChoice', 'openEnded'],
+    default: 'multipleChoice'
+  },
+  from: {
+    type: String,
+    enum: ['main', 'user'],
+    default: 'main'
+  },
+  isMultipleAnswers: Boolean,
   correctAnswerImg: String,
   correctAnswerVideo: String,
   subject: { type: Schema.Types.ObjectId, ref: 'Subject' },

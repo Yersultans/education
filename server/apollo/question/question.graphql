@@ -5,11 +5,14 @@ type Question {
   options: [String]
   correctAnswers: [String]
   language: String
+  type: String
+  from: String
   subject: Subject
   lesson: Lesson
   activity: Activity
   correctAnswerVideo: String
   correctAnswerImg: String
+  isMultipleAnswers: Boolean
 }
 
 input QuestionInput {
@@ -18,11 +21,14 @@ input QuestionInput {
   options: [String]
   correctAnswers: [String]
   language: String
+  type: String
+  from: String
   subject: ID
   lesson: ID
   activity: ID
   correctAnswerVideo: String
   correctAnswerImg: String
+  isMultipleAnswers: Boolean
 }
 
 input QuestionFilterInput {

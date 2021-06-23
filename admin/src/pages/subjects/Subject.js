@@ -1,10 +1,7 @@
-import React, { useState, useCallback } from 'react'
-import styled from 'styled-components'
+import React, { useState } from 'react'
 import { Tabs, Spin } from 'antd'
 import { useQuery, useMutation, gql } from '@apollo/client'
 import { ProjectOutlined, BookOutlined } from '@ant-design/icons'
-
-// import EditComponent from '../../components/EditComponent'
 
 import Lessons from '../lessons/Lessons'
 

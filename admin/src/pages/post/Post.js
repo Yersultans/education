@@ -1,5 +1,4 @@
 import React from 'react'
-import styled from 'styled-components'
 import { useQuery, useMutation, gql } from '@apollo/client'
 // import EditComponent from '../../components/EditComponent'
 import { Spin } from 'antd'
@@ -36,7 +35,7 @@ const UPDATE_POST = gql`
 export default function Post(props) {
   const { id } = props.match.params
 
-  const [updatePost] = useMutation(UPDATE_POST)
+  // const [updatePost] = useMutation(UPDATE_POST)
 
   const { data, loading, error } = useQuery(GET_POST, { variables: { id } })
 
@@ -47,31 +46,6 @@ export default function Post(props) {
       </div>
     )
   if (error) return <div>ERROR</div>
-
-  const fields = [
-    {
-      key: 'name',
-      label: 'Название',
-      value: data && data.post ? data.post.name : '',
-      isRequired: true
-    },
-    {
-      key: 'imageUrl',
-      label: 'ImageUrl',
-      value: data && data.post ? data.post.imageUrl : '',
-      isRequired: true
-    },
-    {
-      key: 'content',
-      label: 'Контент',
-      value: data && data.post ? data.post.content : '',
-      type: 'text',
-      isRequired: true
-    }
-  ]
-  const handleUpdateClick = values => {
-    updatePost({ variables: { id, input: values } })
-  }
 
   return (
     <DefaultStyledContainer>

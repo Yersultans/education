@@ -1,9 +1,10 @@
 import React, { useState, useCallback } from 'react'
 import { useQuery, useMutation, gql } from '@apollo/client'
 import { Link } from 'react-router-dom'
-import { Table, Button, Divider, Spin } from 'antd'
+import { Table, Button, Divider } from 'antd'
 
 // import CreateForm from '../../components/CreateForm'
+import Loading from '../shared/Loading'
 import withMainLayout from '../../hocs/withMainLayout'
 import DefaultStyledContainer from '../../components/DefaultStyledContainer'
 import showConfirm from '../../components/DeleteFromTableFunc'
@@ -158,13 +159,7 @@ const Subjects = () => {
     })
   }
 
-  if (loading)
-    return (
-      <div>
-        <Spin />
-      </div>
-    )
-  if (error) return <p>ERROR</p>
+  if (loading) return <Loading />
 
   return (
     <DefaultStyledContainer>

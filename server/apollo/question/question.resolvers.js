@@ -1,17 +1,11 @@
-const fields =
-  '_id text options level correctAnswers language question subject lesson activity correctAnswerVideo correctAnswerImg'
-
 module.exports = {
   Query: {
     async questions(_, args, ctx) {
-      const questions = await ctx.models.Question.find({}, fields)
+      const questions = await ctx.models.Question.find({})
       return questions
     },
     async question(_, args, ctx) {
-      const question = await ctx.models.Question.findById(
-        args.id,
-        fields
-      ).exec()
+      const question = await ctx.models.Question.findById(args.id).exec()
       if (!question) {
         throw new Error('Question does not exist')
       }

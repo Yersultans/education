@@ -22,6 +22,7 @@ import Post from './post/Post'
 import Questions from './questions/questions'
 import AddQuestion from './questions/addQuestion'
 import Question from './questions/question'
+import PublicPage from './PublicPage'
 
 import withHelmet from '../hocs/withHelmet'
 import { ProvideAuth } from '../context/useAuth'
@@ -59,6 +60,8 @@ function App() {
           <BrowserRouter>
             <ToastContainer />
             <LoadingDialog />
+            <Route exact path="/public" component={PublicPage} />
+            <Route exact path="/" component={PublicPage} />
             <Route exact path="/login" component={Login} />
             <PrivateRoute exact path="/subjects" component={Subjects} />
             <PrivateRoute exact path="/subjects/:id" component={Subject} />

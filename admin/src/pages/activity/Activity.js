@@ -1,10 +1,9 @@
 import React from 'react'
-import styled from 'styled-components'
+import { Spin } from 'antd'
 import { useQuery, useMutation, gql } from '@apollo/client'
 // import EditComponent from '../../components/EditComponent'
 
 import DefaultStyledContainer from '../../components/DefaultStyledContainer'
-import { Spin } from 'antd'
 
 const GET_ACTIVITY = gql`
   query getActivity($id: ID!) {

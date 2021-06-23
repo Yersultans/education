@@ -1,9 +1,6 @@
-import React, { useState, useCallback, useEffect } from 'react'
-import styled from 'styled-components'
-import { Button, Form, Input, Checkbox, Switch, Select, Spin } from 'antd'
-import { useQuery, useMutation, gql } from '@apollo/client'
-import { Link } from 'react-router-dom'
-import TextEditor from '../../components/nTextEditor'
+import React from 'react'
+import { Spin } from 'antd'
+import { useQuery, gql } from '@apollo/client'
 import EditQuestion from './editQuestion'
 
 const GET_DATA = gql`

@@ -2,18 +2,10 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Link, useHistory } from 'react-router-dom'
 import {
-  CalendarOutlined,
-  ProfileOutlined,
   StarOutlined,
-  ThunderboltOutlined,
-  CrownOutlined,
-  UserOutlined,
-  ShopOutlined,
-  DollarCircleOutlined,
-  BlockOutlined,
-  LogoutOutlined,
-  TeamOutlined,
-  MessageOutlined
+  QuestionCircleOutlined,
+  BookOutlined,
+  LogoutOutlined
 } from '@ant-design/icons'
 import { Menu } from 'antd'
 import { useAuth } from '../context/useAuth'
@@ -23,10 +15,10 @@ function MainMenu({ currentUrl }) {
   const history = useHistory()
 
   const adminMenu = [
-    { link: '/subjects', name: 'Предмет', icon: CalendarOutlined },
+    { link: '/subjects', name: 'Предметы', icon: BookOutlined },
     // { link: '/users', name: 'Пользователи', icon: TeamOutlined },
-    { link: '/questions', name: 'Программы', icon: ProfileOutlined },
-    { link: '/posts', name: 'Классы', icon: StarOutlined }
+    { link: '/questions', name: 'Вопросы', icon: QuestionCircleOutlined },
+    { link: '/posts', name: 'Посты', icon: StarOutlined }
   ]
 
   const onLogoutClick = () => {

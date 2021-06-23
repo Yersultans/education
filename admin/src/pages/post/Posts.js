@@ -1,9 +1,9 @@
-import React, { useState, useCallback } from 'react'
+import React from 'react'
 import { useQuery, useMutation, gql } from '@apollo/client'
 import { Link } from 'react-router-dom'
-import { Table, Button, Divider, Spin } from 'antd'
+import { Table, Button, Divider } from 'antd'
 
-// import CreateForm from '../../components/CreateForm'
+import Loading from '../shared/Loading'
 import DefaultStyledContainer from '../../components/DefaultStyledContainer'
 import showConfirm from '../../components/DeleteFromTableFunc'
 import withMainLayout from '../../hocs/withMainLayout'
@@ -49,9 +49,6 @@ const ADD_POST = gql`
 `
 
 function Posts() {
-  const [modalVisible, setModalVisible] = useState(false)
-  const [formRef, setFormRef] = useState(null)
-
   const [addPost] = useMutation(ADD_POST, {
     update(cache, { data: { addPost: post } }) {
       const { posts } = cache.readQuery({ query: GET_POSTS })
@@ -73,12 +70,6 @@ function Posts() {
       })
     }
   })
-
-  const saveFormRef = useCallback(node => {
-    if (node !== null) {
-      setFormRef(node)
-    }
-  }, [])
 
   const { data, loading, error } = useQuery(GET_POSTS)
 
@@ -122,55 +113,7 @@ function Posts() {
     }
   ]
 
-  const handleFields = () => {
-    const fields = [
-      {
-        key: 'name',
-        label: 'Название'
-      },
-      {
-        key: 'imageUrl',
-        label: 'imageUrl'
-      }
-    ]
-    return fields
-  }
-
-  const showModal = () => {
-    setModalVisible(true)
-  }
-
-  const handleCancel = () => {
-    setModalVisible(false)
-  }
-
-  const handleCreate = () => {
-    formRef.validateFields((err, values) => {
-      if (err) {
-        return
-      }
-
-      addPost({
-        variables: {
-          input: {
-            ...values,
-            user: dataCurrentUser && dataCurrentUser.getCurrentUser.id
-          }
-        }
-      })
-
-      formRef.resetFields()
-      setModalVisible(false)
-    })
-  }
-
-  if (loading || loadingUser)
-    return (
-      <div>
-        <Spin />
-      </div>
-    )
-  if (error || errorUser) return <p>ERROR</p>
+  if (loading || loadingUser) return <Loading />
 
   return (
     <DefaultStyledContainer>
@@ -185,19 +128,12 @@ function Posts() {
         columns={columns}
         title={() => (
           <div>
-            <Button onClick={showModal}>Добавить новый Пост</Button>
+            <Button onClick={() => console.log('asd')}>
+              Добавить новый Пост
+            </Button>
           </div>
         )}
       />
-
-      {/* <CreateForm
-        title="Добавить новый Пост"
-        ref={saveFormRef}
-        visible={modalVisible}
-        onCancel={handleCancel}
-        onCreate={handleCreate}
-        fields={handleFields()}
-      /> */}
     </DefaultStyledContainer>
   )
 }

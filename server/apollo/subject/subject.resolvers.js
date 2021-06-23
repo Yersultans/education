@@ -1,4 +1,4 @@
-const fields = '_id name imageUrl language lessons'
+const fields = '_id name imageUrl language description price lessons'
 
 module.exports = {
   Query: {

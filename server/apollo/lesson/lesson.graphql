@@ -1,22 +1,26 @@
 type Lesson {
   id: ID!
   name: String
+  description: String
   content: String
   imageUrl: String
   language: String
   subject: Subject
   videoUrl: String
   activities: [Activity]
+  isBlocked: Boolean
 }
 
 input LessonInput {
   name: String
+  description: String
   content: String
   imageUrl: String
   language: String
   subject: ID
   videoUrl: String
   activities: [ID]
+  isBlocked: Boolean
 }
 
 extend type Query {

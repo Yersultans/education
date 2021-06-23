@@ -4,6 +4,7 @@ const { Schema } = mongoose
 
 const Activity = new Schema({
   name: String,
+  desctiption: String,
   content: String,
   imageUrl: String,
   language: {
@@ -13,7 +14,9 @@ const Activity = new Schema({
   },
   subject: { type: Schema.Types.ObjectId, ref: 'Subject' },
   lesson: { type: Schema.Types.ObjectId, ref: 'Lesson' },
-  videoUrl: String
+  videoUrl: String,
+  isBlocked: String,
+  isActive: Boolean
 })
 
 export default mongoose.model('Activity', Activity)

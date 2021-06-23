@@ -1,6 +1,8 @@
 type Subject {
   id: ID!
   name: String
+  description: String
+  price: Int
   imageUrl: String
   language: String
   lessons: [Lesson]
@@ -8,6 +10,8 @@ type Subject {
 
 input SubjectInput {
   name: String
+  description: String
+  price: Int
   imageUrl: String
   language: String
   lessons: [ID]

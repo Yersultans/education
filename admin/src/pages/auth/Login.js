@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react'
-import { Form, Input, Button, Checkbox } from 'antd'
+import React, { useEffect } from 'react'
+import { Form, Input, Button } from 'antd'
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
 import { useHistory } from 'react-router-dom'
 import { useMutation, gql } from '@apollo/client'
@@ -48,11 +48,10 @@ const russianText = {
 const Login = () => {
   const history = useHistory()
   const [login, { data, error, loading }] = useMutation(LOGIN)
-  const { fetchUser } = useAuth()
+  const { user, fetchUser } = useAuth()
 
   const handleSubmit = values => {
     const { username, password } = values
-    console.log('values', values)
     login({
       variables: {
         input: { username, password }
@@ -68,9 +67,15 @@ const Login = () => {
       localStorage.setItem('token', `${data.loginAdmin.token}`)
       toast.success('Successfully logged in')
       fetchUser()
-      history.push('/levels')
+      history.push('/subjects')
     }
   }, [data, loading, error])
+
+  useEffect(() => {
+    if (user) {
+      history.push('/subjects')
+    }
+  }, [user])
 
   return (
     <>

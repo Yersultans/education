@@ -1,13 +1,11 @@
-const fields = '_id name content imageUrl language subject videoUrl activities'
-
 module.exports = {
   Query: {
     async lessons(_, args, ctx) {
-      const lessons = await ctx.models.Lesson.find({}, fields)
+      const lessons = await ctx.models.Lesson.find({})
       return lessons
     },
     async lesson(_, args, ctx) {
-      const lesson = await ctx.models.Lesson.findById(args.id, fields).exec()
+      const lesson = await ctx.models.Lesson.findById(args.id).exec()
       if (!lesson) {
         throw new Error('Lesson does not exist')
       }

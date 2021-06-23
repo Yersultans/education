@@ -4,7 +4,7 @@ import { Layout } from 'antd'
 import { useHistory } from 'react-router-dom'
 
 import MainMenu from './MainMenu'
-import Logo from '../pages/logo.svg'
+import LogoPNG from '../pages/logo.png'
 
 const { Header, Content, Sider } = Layout
 
@@ -43,6 +43,10 @@ const StyledText = styled.div`
   color: #262626;
 `
 
+const StyledLogo = styled.img`
+  width: 125px;
+`
+
 const withMainLayout = Page => {
   return props => {
     const history = useHistory()
@@ -51,17 +55,9 @@ const withMainLayout = Page => {
     const [currentHeader, setCurrentHeader] = React.useState('')
 
     const adminMenu = [
-      { link: '/events', name: 'События' },
-      { link: '/users', name: 'Пользователи' },
-      { link: '/programSets', name: 'Программы' },
-      { link: '/programs', name: 'Классы' },
-      { link: '/exercises', name: 'Упражнения' },
-      { link: '/levels', name: 'Уровни' },
-      { link: '/heros', name: 'Персонажи' },
-      { link: '/clubs', name: 'Клубы' },
-      { link: '/payments', name: 'Пакеты' },
-      { link: '/banners', name: 'Баннеры' },
-      { link: '/messages', name: 'Сообщения' }
+      { link: '/subjects', name: 'Предметы' },
+      { link: '/questions', name: 'Вопросы' },
+      { link: '/posts', name: 'Посты' }
     ]
     // TODO: check for a prettier way to do this
     React.useEffect(() => {
@@ -76,7 +72,7 @@ const withMainLayout = Page => {
       <StyledLayout>
         <StyledSider>
           <LogoContainer>
-            <img src={Logo} alt="logo" />
+            <StyledLogo src={LogoPNG} alt="logo" />
           </LogoContainer>
           <MainMenu {...{ currentUrl, history, setCurrentHeader }} />
         </StyledSider>

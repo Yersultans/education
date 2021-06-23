@@ -1,8 +1,9 @@
-import React, { useState, useCallback } from 'react'
+import React from 'react'
 import { useQuery, useMutation, gql } from '@apollo/client'
-import { Button, Divider, Table, Spin } from 'antd'
+import { Button, Divider, Table } from 'antd'
 import { Link } from 'react-router-dom'
 
+import Loading from '../shared/Loading'
 import withMainLayout from '../../hocs/withMainLayout'
 import DefaultStyledContainer from '../../components/DefaultStyledContainer'
 import showConfirm from '../../components/DeleteFromTableFunc'
@@ -83,12 +84,7 @@ const Questions = () => {
     }
   ]
 
-  if (loading)
-    return (
-      <div>
-        <Spin />
-      </div>
-    )
+  if (loading) return <Loading />
   if (error) return <div> Error </div>
 
   return (
